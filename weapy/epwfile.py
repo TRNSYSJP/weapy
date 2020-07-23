@@ -221,28 +221,3 @@ class EpwFile(WeatherDataFile):
     @sunshine_durations.setter
     def sunshine_durations(self, val):
         raise NotImplementedError
-
-if(__name__ == '__main__'):
-
-    # fname = r'C:\PassiveDesignTool1.0\Exe\WeatherData\EnergyPlus_IWEC\JPN_Kagoshima.478270_IWEC\JPN_Kagoshima.478270_IWEC.epw'
-    # fname = r'C:\WorkCopy\PassiveClimaticChart\FIN_US_Helsinki-Vantaa.AP.029740_TMYx\FIN_US_Helsinki-Vantaa.AP.029740_TMYx.epw'
-    fname = r'C:\WorkCopy\PassiveClimaticChart\Weather\EPW\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017.epw'
-    epw = EpwFile(fname)
-
-    # print(epw.get_ambient_temperature())
-
-    with open('windspeed_winddir.csv', 'w') as f:
-        # writer = csv.writer(f)
-        wspeed = epw.get_wind_velocity()
-        wdir = epw.get_wind_direction()
-        for i in range(len(wspeed)):
-            f.write('{0}, {1}\n'.format(wspeed[i], wdir[i]))
-    
-
-        
-    
-
-
-
-
-

@@ -7,7 +7,6 @@ import struct
 import math
 import numpy as np
 
-# HOURS_PER_YEAR = 8760 #年間時間
 KELVIN = 273.15 #絶対温度(摂氏0℃）
 Po = 101.325    #標準大気圧[kPa] 
 
@@ -19,41 +18,41 @@ class WeaFile(WeatherDataFile):
         self.file_name = filename   #標準年気象データファイル
         self.station_no = no        #地点番号
         self.wea_data = []          #地点の気象データ一式
-        # self.rh = []                #相対湿度[%]
-
-        # self.it =  np.empty(0)                #全天日射量
         
         #地点の標準年データを取得
         #-----------------------------------------------
         self.__load(filename, no)
 
-        #単位換算
-        #-----------------------------------------------
-
         #日射量の単位換算
+        #-----------------------------------------------
         self.wea_data[2] = self.wea_data[2]/3.6*1000.0 # 日射量の単位をMJ/hm2 -> W/m2へ換算
-
+        
         #大気放射量の単位換算
+        #-----------------------------------------------
         self.wea_data[3] = self.wea_data[3]/3.6*1000.0 # 日射量の単位をMJ/hm2 -> W/m2へ換算
 
-        #相対湿度の計算
-        # abs_hum = wea.get_absolute_humidity()#絶対湿度[g/kg']
-        abs_hum = self.wea_data[1]
+        #相対湿度
+        #-----------------------------------------------
+        abs_hum = self.wea_data[1]  #絶対湿度[g/kg']
         abs_hum = np.array(abs_hum) / 1000.0 #単位換算 [g/kg'] -> [kg/kg']
         #相対湿度[%]　絶対湿度、気温から相対湿度を計算する
         self.rh = calc_relative_humidity(abs_hum, np.array(self.wea_data[0]))#相対湿度
 
-        #風向データ
+        #風向
+        #-----------------------------------------------
         self.winddir = []
         dir = 0.0
         directions = self.wea_data[4]
         for i in range(len(directions)):
-            if(directions[i]==0):
-                dir == -9999
+            if(directions[i]==0):#静謐（無風）であれば、風向を-9999へセット
+                dir == -9999    
             else:
-                dir = directions[i]*22.5 #角度へ変換(N:360, E:90, S:180, W:270)
+                dir = directions[i]*22.5 #16方位を角度へ変換(N:360, E:90, S:180, W:270)
             
-            self.winddir.append(dir)
+            self.winddir.append(dir) #風向リストへ追加
+        
+        #-----------------------------------------------
+        
 
 
     def __read_int16(self, f):
@@ -81,6 +80,7 @@ class WeaFile(WeatherDataFile):
         
         
         #EAで整数値としてエンコードされているデータから実数への換算係数
+        #拡張アメダス気象データ 1981-2000, 表3.2 気象要素の単位
         sf=[0.1, 0.1, 0.01, 0.01, 1.0, 0.1, 1.0, 0.1] 
 
         #値の読み出し処理
@@ -102,15 +102,6 @@ class WeaFile(WeatherDataFile):
                 self.wea_data.append(np.array(vals) * sf[i]) #ndarrayに変換して、単位換算後にリストへ追加
 
 
-    
-    # def get_total_radiation_on_horizontal(self):
-    #     """
-    #     return the total radiaton on horizontal[W/(m2h)]\n
-    #     水平面全天日射量の配列を取得、設定する[W/(m2h)]
-    #     """        
-    #     return self.it
-
-
     @property
     def ambient_temperatures(self):
         """
@@ -125,13 +116,6 @@ class WeaFile(WeatherDataFile):
         #     raise ValueError('長さ{}のリストを指定してください'.format(HOURS_PER_YEAR))
         # if super().check_the_list_length(val):
         self.wea_data[0] = val
-        
-    
-    # ambient_temperatures = property(_get_ambient_temperature, _set_ambient_temperature, doc='hoge')
-        # """
-        # Return an array of temperatures. [C]\n
-        # 気温の配列を設定、または返す[C]
-        # """
 
     @property
     def absolute_humidities(self):
@@ -144,7 +128,6 @@ class WeaFile(WeatherDataFile):
     @absolute_humidities.setter
     def absolute_humidities(self, val):
         self.wea_data[1] = val
-
 
     @property
     def relative_humidities(self):
@@ -295,8 +278,6 @@ def GetPws(tabT):
     #     - p3 
     #     + p4 ) / 1000.0
     
-    #return round(Pws, 6)
-    #return np.round(Pws, 6)
     return Pws
 
 def calc_relative_humidity(abs_hum, tambs):
@@ -316,12 +297,9 @@ def calc_relative_humidity(abs_hum, tambs):
     水蒸気分圧[kPa]
     """
     #水蒸気分圧[kPa]
-    #pw = (abs_hum * Po)/(abs_hum + 0.62198) #水蒸気分圧[kPa],ただし標高は考慮しない
     pw = GetPw(abs_hum) #水蒸気分圧[kPa],ただし標高は考慮しない
 
     #気温から飽和水蒸気分圧を計算
-    # tambs = wea.get_ambient_temperature() #気温[C]
-    # tambs_kelvin = np.array(tambs) + KELVIN #[C]->[K]　絶対温度へ換算
     tambs_kelvin = C2K(np.array(tambs))#[C]->[K]　絶対温度へ換算
     #飽和水蒸気分圧[kPa]
     pws = GetPws(tambs_kelvin)
@@ -331,8 +309,3 @@ def calc_relative_humidity(abs_hum, tambs):
 
     return rh
 
-
-
-if(__name__ == '__main__'):
-
-    print('Hello')
