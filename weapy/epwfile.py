@@ -100,7 +100,6 @@ class EpwFile(WeatherDataFile):
         # aa = [self.winddirs.at(i) = -9999 for i in indices]
 
 
-        print('count : ')
 
 
 
@@ -113,9 +112,9 @@ class EpwFile(WeatherDataFile):
         """
         return self.wea_data['DryBulb']
     
-    @ambient_temperatures.setter
-    def ambient_temperatures(self, val):        
-        self.wea_data['DryBulb'] = val
+    # @ambient_temperatures.setter
+    # def ambient_temperatures(self, val):        
+    #     self.wea_data['DryBulb'] = val
     
     @property
     def absolute_humidities(self):
@@ -125,9 +124,9 @@ class EpwFile(WeatherDataFile):
         """
         raise NotImplementedError
 
-    @absolute_humidities.setter
-    def absolute_humidities(self, val):
-        raise NotImplementedError
+    # @absolute_humidities.setter
+    # def absolute_humidities(self, val):
+    #     raise NotImplementedError
 
     @property
     def relative_humidities(self):
@@ -137,9 +136,9 @@ class EpwFile(WeatherDataFile):
         """
         return self.wea_data['RelHum']
     
-    @relative_humidities.setter
-    def relative_humidities(self, val):
-        self.wea_data['RelHum'] = val
+    # @relative_humidities.setter
+    # def relative_humidities(self, val):
+    #     self.wea_data['RelHum'] = val
 
     @property
     def horizontal_global_solar_irradiations(self):
@@ -150,9 +149,9 @@ class EpwFile(WeatherDataFile):
 
         return self.wea_data['GloHorzRad'] #[Wh/m2]なんだけど結果OK?
 
-    @horizontal_global_solar_irradiations.setter
-    def horizontal_global_solar_irradiations(self, val):       
-        self.wea_data['GloHorzRad'] = val
+    # @horizontal_global_solar_irradiations.setter
+    # def horizontal_global_solar_irradiations(self, val):       
+    #     self.wea_data['GloHorzRad'] = val
 
 
     @property
@@ -164,10 +163,10 @@ class EpwFile(WeatherDataFile):
         # raise NotImplementedError
         return self.wea_data['HorzIRSky']
 
-    @downward_longwave_irradiations.setter
-    def downward_longwave_irradiations(self, val):
-        # raise NotImplementedError 
-        self.wea_data['HorzIRSky'] = val
+    # @downward_longwave_irradiations.setter
+    # def downward_longwave_irradiations(self, val):
+    #     # raise NotImplementedError 
+    #     self.wea_data['HorzIRSky'] = val
     
     @property
     def wind_directions(self):
@@ -178,9 +177,9 @@ class EpwFile(WeatherDataFile):
         # return self.wea_data['WindDir']
         return self.winddirs
     
-    @wind_directions.setter
-    def wind_directions(self, val):
-        self.winddirs = val
+    # @wind_directions.setter
+    # def wind_directions(self, val):
+    #     self.winddirs = val
 
     @property
     def wind_velocities(self):
@@ -190,9 +189,9 @@ class EpwFile(WeatherDataFile):
         """
         return self.wea_data['WindSpd']
 
-    @wind_velocities.setter
-    def wind_velocities(self, val):
-        self.wea_data['WindSpd'] = val
+    # @wind_velocities.setter
+    # def wind_velocities(self, val):
+    #     self.wea_data['WindSpd'] = val
 
 
     @property
@@ -204,10 +203,10 @@ class EpwFile(WeatherDataFile):
         # raise NotImplementedError
         return self.wea_data['Rain']
     
-    @precipitation_amounts.setter
-    def precipitation_amounts(self, val):
-        # raise NotImplementedError
-        self.wea_data['Rain'] = val
+    # @precipitation_amounts.setter
+    # def precipitation_amounts(self, val):
+    #     # raise NotImplementedError
+    #     self.wea_data['Rain'] = val
 
     @property
     def sunshine_durations(self):
@@ -218,6 +217,6 @@ class EpwFile(WeatherDataFile):
         raise NotImplementedError
         # return self.wea_data[7]
                 
-    @sunshine_durations.setter
-    def sunshine_durations(self, val):
-        raise NotImplementedError
+    # @sunshine_durations.setter
+    # def sunshine_durations(self, val):
+    #     raise NotImplementedError
