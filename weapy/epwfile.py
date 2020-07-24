@@ -69,8 +69,8 @@ class EpwFile(WeatherDataFile):
     @property
     def ambient_temperatures(self):
         """
-        Get or set the array of temperatures. [C]\n
-        気温の配列を取得、設定する[C]
+        Get the list of temperatures. [C]\n
+        気温のリストを返す[C]
         """
         return self.wea_data['DryBulb'].values.tolist()
     
@@ -81,8 +81,8 @@ class EpwFile(WeatherDataFile):
     @property
     def absolute_humidities(self):
         """
-        Get or set the array of absolute humidities.[g/kg]\n
-        絶対湿度の配列を取得、設定する[g/kg]
+        Get the list of absolute humidities.[g/kg]\n
+        絶対湿度のリストを返す[g/kg]
         """
         raise NotImplementedError
 
@@ -93,8 +93,8 @@ class EpwFile(WeatherDataFile):
     @property
     def relative_humidities(self):
         """
-        Get or set the array of relative humidities.[g/kg]\n
-        相対湿度の配列を取得、設定する[%]
+        Get the list of relative humidities.[g/kg]\n
+        相対湿度のリストを返す[%]
         """
         return self.wea_data['RelHum'].values.tolist()
     
@@ -105,8 +105,8 @@ class EpwFile(WeatherDataFile):
     @property
     def horizontal_global_solar_irradiations(self):
         """
-        Get or set the array of horizoltal global solar irradiations.[W/m2]\n
-        全天日射量の配列を取得、設定する[W/m2]
+        Get the list of horizoltal global solar irradiations.[W/m2]\n
+        全天日射量のリストを返す[W/m2]
         """
 
         return self.wea_data['GloHorzRad'].values.tolist() #[Wh/m2]なんだけど結果OK?
@@ -120,7 +120,7 @@ class EpwFile(WeatherDataFile):
     def downward_longwave_irradiations(self):
         """
         Get or set the  array of downward longwave irradiations.[W/m2]\n
-        大気放射量の配列を取得、設定する[W/m2]
+        大気放射量のリストを返す[W/m2]
         """
         # raise NotImplementedError
         return self.wea_data['HorzIRSky'].values.tolist()
@@ -133,8 +133,8 @@ class EpwFile(WeatherDataFile):
     @property
     def wind_directions(self):
         """
-        Get or set the array of wind directions.[deg]\n
-        風向の配列を取得、設定する[deg]
+        Get the list of wind directions.[deg]\n
+        風向のリストを返す[deg]
         """
         # return self.wea_data['WindDir']
         return self.winddirs
@@ -146,8 +146,8 @@ class EpwFile(WeatherDataFile):
     @property
     def wind_velocities(self):
         """
-        Get or set the array of wind Velocities.[m/s]\n
-        風速の配列を取得、設定する[m/s]
+        Get the list of wind Velocities.[m/s]\n
+        風速のリストを返す[m/s]
         """
         return self.wea_data['WindSpd'].values.tolist()
 
@@ -159,8 +159,8 @@ class EpwFile(WeatherDataFile):
     @property
     def precipitation_amounts(self):
         """
-        Get or set the array of precipitation amount.[mm]\n
-        降水量の配列を取得、設定する[mm]
+        Get the list of precipitation amount.[mm]\n
+        降水量のリストを返す[mm]
         """
         # raise NotImplementedError
         return self.wea_data['Rain'].values.tolist()
@@ -173,8 +173,8 @@ class EpwFile(WeatherDataFile):
     @property
     def sunshine_durations(self):
         """
-        Get or set the array of sunshine durations.[h]\n
-        日照時間の配列を取得、設定する[h]
+        Get the list of sunshine durations.[h]\n
+        日照時間のリストを返す[h]
         """
         raise NotImplementedError
         # return self.wea_data[7]

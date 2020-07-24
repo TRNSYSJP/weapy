@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>weapy.epwfile &mdash; weapy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> weapy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../weapy.html">weapy package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">weapy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>weapy.epwfile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for weapy.epwfile</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># author     Yuichi Yasuda @ quattro corporate design</span>
+<span class="c1"># copyright  quattro corporate design. All right reserved.</span>
+
+<span class="kn">from</span> <span class="nn">.weatherdata</span> <span class="kn">import</span> <span class="n">WeatherDataFile</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<div class="viewcode-block" id="EpwFile"><a class="viewcode-back" href="../../weapy.html#weapy.epwfile.EpwFile">[docs]</a><span class="k">class</span> <span class="nc">EpwFile</span><span class="p">(</span><span class="n">WeatherDataFile</span><span class="p">):</span>
+    <span class="c1"># コンストラクタの定義</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c1"># ①-⑥	年,月,日,時,分,リマーク</span>
+        <span class="c1"># ⑦ 外気温度[°Ｃ]</span>
+        <span class="c1"># ⑧	露点温度[°Ｃ]</span>
+        <span class="c1"># ⑨	相対湿度[％]</span>
+        <span class="c1"># ⑩	大気圧[Pa]</span>
+        <span class="c1"># ⑪	大気圏外水平面日射量[W/m2]</span>
+        <span class="c1"># ⑫	大気圏外法線面直達日射量[W/m2]</span>
+        <span class="c1"># ⑬	大気放射量[W/m2]</span>
+        <span class="c1"># ⑭	全天日射量[W/m2]</span>
+        <span class="c1"># ⑮	法線面直達日射量[W/m2]</span>
+        <span class="c1"># ⑯	水平面天空日射量[W/m2]</span>
+        <span class="c1"># ⑰	グローバル照度[lx]</span>
+        <span class="c1"># ⑱	法線面直射照度[lx]</span>
+        <span class="c1"># ⑲ 天空照度[lx]</span>
+        <span class="c1"># ⑳ 天頂輝度[cd/m2]</span>
+
+        <span class="c1"># ㉑ 風向[°]</span>
+        <span class="c1"># ㉒ 風速[m/s]</span>
+        <span class="c1"># ㉓ 雲量(0-10)</span>
+        <span class="c1"># ㉔ 不透明雲量</span>
+        <span class="c1"># ㉕ 視程[km]</span>
+        <span class="c1"># ㉖ 雲高[m]</span>
+        <span class="c1"># ㉗ 気象状況</span>
+        <span class="c1"># ㉘ 気象コード</span>
+        <span class="c1"># ㉙ 可降水量[mm]</span>
+        <span class="c1"># ㉚ 大気の光学的厚さ</span>
+        <span class="c1"># ㉛ 積雪量[cm]</span>
+        <span class="c1"># ㉜ 最後の積雪からの日数[日]</span>
+        <span class="c1"># ㉝ アルベド</span>
+        <span class="c1"># ㉞ 降水量[mm]</span>
+        <span class="c1"># ㉟ 降水時間[hr]</span>
+
+
+        <span class="c1"># Date,HH:MM,Datasource,DryBulb {C},DewPoint {C},RelHum {%},Atmos Pressure {Pa},ExtHorzRad {Wh/m2},ExtDirRad {Wh/m2},HorzIRSky {Wh/m2},</span>
+        <span class="c1"># GloHorzRad {Wh/m2},DirNormRad {Wh/m2},DifHorzRad {Wh/m2},GloHorzIllum {lux},DirNormIllum {lux},DifHorzIllum {lux},ZenLum {Cd/m2},WindDir {deg},WindSpd {m/s},</span>
+        <span class="c1"># TotSkyCvr {.1},OpaqSkyCvr {.1},Visibility {km},Ceiling Hgt {m},PresWeathObs,PresWeathCodes,Precip Wtr {mm},Aerosol Opt Depth {.001},SnowDepth {cm},Days Last Snow,</span>
+        <span class="c1"># Albedo {.01},Rain {mm},Rain Quantity {hr}</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span><span class="s1">&#39;month&#39;</span><span class="p">,</span><span class="s1">&#39;day&#39;</span><span class="p">,</span><span class="s1">&#39;hour&#39;</span><span class="p">,</span><span class="s1">&#39;min&#39;</span><span class="p">,</span><span class="s1">&#39;Datasource&#39;</span><span class="p">,</span><span class="s1">&#39;DryBulb&#39;</span><span class="p">,</span><span class="s1">&#39;DewPoint&#39;</span><span class="p">,</span><span class="s1">&#39;RelHum&#39;</span><span class="p">,</span><span class="s1">&#39;AtmosPressure&#39;</span><span class="p">,</span><span class="s1">&#39;ExtHorzRad&#39;</span><span class="p">,</span><span class="s1">&#39;ExtDirRad&#39;</span><span class="p">,</span><span class="s1">&#39;HorzIRSky&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;GloHorzRad&#39;</span><span class="p">,</span><span class="s1">&#39;DirNormRad&#39;</span><span class="p">,</span><span class="s1">&#39;DifHorzRad&#39;</span><span class="p">,</span><span class="s1">&#39;GloHorzIllum&#39;</span><span class="p">,</span><span class="s1">&#39;DirNormIllum&#39;</span><span class="p">,</span><span class="s1">&#39;DifHorzIllum&#39;</span><span class="p">,</span><span class="s1">&#39;ZenLum&#39;</span><span class="p">,</span><span class="s1">&#39;WindDir&#39;</span><span class="p">,</span><span class="s1">&#39;WindSpd&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;TotSkyCvr&#39;</span><span class="p">,</span><span class="s1">&#39;OpaqSkyCvr&#39;</span><span class="p">,</span><span class="s1">&#39;Visibility&#39;</span><span class="p">,</span><span class="s1">&#39;CeilingHgt&#39;</span><span class="p">,</span><span class="s1">&#39;PresWeathObs&#39;</span><span class="p">,</span><span class="s1">&#39;PresWeathCodes&#39;</span><span class="p">,</span><span class="s1">&#39;PrecipWtr&#39;</span><span class="p">,</span><span class="s1">&#39;AerosolOptDepth&#39;</span><span class="p">,</span><span class="s1">&#39;SnowDepth&#39;</span><span class="p">,</span><span class="s1">&#39;DaysLastSnow&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;Albedo&#39;</span><span class="p">,</span><span class="s1">&#39;Rain&#39;</span><span class="p">,</span><span class="s1">&#39;RainQuantity&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span> <span class="c1">#ヘッダーを読み飛ばして、Data Records のみ読み込む</span>
+
+        <span class="c1"># 風向</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winddirs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;WindDir&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        
+        <span class="c1"># 風速        </span>
+        <span class="n">winspeeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;WindSpd&#39;</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">8760</span><span class="p">)</span> <span class="k">if</span> <span class="n">winspeeds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span> 
+            <span class="c1">#無風（静謐）あれば方位を -9999 へ変更する</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">winddirs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ambient_temperatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of temperatures. [C]\n</span>
+<span class="sd">        気温のリストを返す[C]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;DryBulb&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="c1"># @ambient_temperatures.setter</span>
+    <span class="c1"># def ambient_temperatures(self, val):        </span>
+    <span class="c1">#     self.wea_data[&#39;DryBulb&#39;] = val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">absolute_humidities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of absolute humidities.[g/kg]\n</span>
+<span class="sd">        絶対湿度のリストを返す[g/kg]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># @absolute_humidities.setter</span>
+    <span class="c1"># def absolute_humidities(self, val):</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">relative_humidities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of relative humidities.[g/kg]\n</span>
+<span class="sd">        相対湿度のリストを返す[%]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;RelHum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="c1"># @relative_humidities.setter</span>
+    <span class="c1"># def relative_humidities(self, val):</span>
+    <span class="c1">#     self.wea_data[&#39;RelHum&#39;] = val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">horizontal_global_solar_irradiations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of horizoltal global solar irradiations.[W/m2]\n</span>
+<span class="sd">        全天日射量のリストを返す[W/m2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;GloHorzRad&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="c1">#[Wh/m2]なんだけど結果OK?</span>
+
+    <span class="c1"># @horizontal_global_solar_irradiations.setter</span>
+    <span class="c1"># def horizontal_global_solar_irradiations(self, val):       </span>
+    <span class="c1">#     self.wea_data[&#39;GloHorzRad&#39;] = val</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">downward_longwave_irradiations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get or set the  array of downward longwave irradiations.[W/m2]\n</span>
+<span class="sd">        大気放射量のリストを返す[W/m2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;HorzIRSky&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># @downward_longwave_irradiations.setter</span>
+    <span class="c1"># def downward_longwave_irradiations(self, val):</span>
+    <span class="c1">#     # raise NotImplementedError </span>
+    <span class="c1">#     self.wea_data[&#39;HorzIRSky&#39;] = val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wind_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of wind directions.[deg]\n</span>
+<span class="sd">        風向のリストを返す[deg]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return self.wea_data[&#39;WindDir&#39;]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">winddirs</span>
+    
+    <span class="c1"># @wind_directions.setter</span>
+    <span class="c1"># def wind_directions(self, val):</span>
+    <span class="c1">#     self.winddirs = val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wind_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of wind Velocities.[m/s]\n</span>
+<span class="sd">        風速のリストを返す[m/s]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;WindSpd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="c1"># @wind_velocities.setter</span>
+    <span class="c1"># def wind_velocities(self, val):</span>
+    <span class="c1">#     self.wea_data[&#39;WindSpd&#39;] = val</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">precipitation_amounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of precipitation amount.[mm]\n</span>
+<span class="sd">        降水量のリストを返す[mm]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;Rain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="c1"># @precipitation_amounts.setter</span>
+    <span class="c1"># def precipitation_amounts(self, val):</span>
+    <span class="c1">#     # raise NotImplementedError</span>
+    <span class="c1">#     self.wea_data[&#39;Rain&#39;] = val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sunshine_durations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of sunshine durations.[h]\n</span>
+<span class="sd">        日照時間のリストを返す[h]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1"># return self.wea_data[7]</span>
+                
+    <span class="c1"># @sunshine_durations.setter</span>
+    <span class="c1"># def sunshine_durations(self, val):</span>
+    <span class="c1">#     raise NotImplementedError</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, quattro corporate design. All right reserved.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

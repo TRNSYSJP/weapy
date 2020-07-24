@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>weapy.weafile &mdash; weapy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> weapy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../weapy.html">weapy package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">weapy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>weapy.weafile</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for weapy.weafile</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+<span class="c1"># author     Yuichi Yasuda @ quattro corporate design</span>
+<span class="c1"># copyright  quattro corporate design. All right reserved.</span>
+
+<span class="kn">from</span> <span class="nn">.weatherdata</span> <span class="kn">import</span> <span class="n">WeatherDataFile</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">KELVIN</span> <span class="o">=</span> <span class="mf">273.15</span> <span class="c1">#絶対温度(摂氏0℃）</span>
+<span class="n">Po</span> <span class="o">=</span> <span class="mf">101.325</span>    <span class="c1">#標準大気圧[kPa] </span>
+
+<div class="viewcode-block" id="WeaFile"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.WeaFile">[docs]</a><span class="k">class</span> <span class="nc">WeaFile</span><span class="p">(</span><span class="n">WeatherDataFile</span><span class="p">):</span>
+    <span class="c1"># コンストラクタの定義</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">no</span><span class="p">):</span>
+        <span class="c1">#初期化</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">filename</span>   <span class="c1">#標準年気象データファイル</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_no</span> <span class="o">=</span> <span class="n">no</span>        <span class="c1">#地点番号</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span> <span class="o">=</span> <span class="p">[]</span>          <span class="c1">#地点の気象データ一式</span>
+        
+        <span class="c1">#地点の標準年データを取得</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">no</span><span class="p">)</span>
+
+        <span class="c1">#日射量の単位換算</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="mf">3.6</span><span class="o">*</span><span class="mf">1000.0</span> <span class="c1"># 日射量の単位をMJ/hm2 -&gt; W/m2へ換算</span>
+        
+        <span class="c1">#大気放射量の単位換算</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="mf">3.6</span><span class="o">*</span><span class="mf">1000.0</span> <span class="c1"># 日射量の単位をMJ/hm2 -&gt; W/m2へ換算</span>
+
+        <span class="c1">#相対湿度</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="n">abs_hum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1">#絶対湿度[g/kg&#39;]</span>
+        <span class="n">abs_hum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">abs_hum</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="c1">#単位換算 [g/kg&#39;] -&gt; [kg/kg&#39;]</span>
+        <span class="c1">#相対湿度[%]　絶対湿度、気温から相対湿度を計算する</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rh</span> <span class="o">=</span> <span class="n">calc_relative_humidity</span><span class="p">(</span><span class="n">abs_hum</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span><span class="c1">#相対湿度</span>
+
+        <span class="c1">#風向</span>
+        <span class="c1">#-----------------------------------------------</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">dir</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">directions</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">directions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span><span class="c1">#静謐（無風）であれば、風向を-9999へセット</span>
+                <span class="nb">dir</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span>    
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">dir</span> <span class="o">=</span> <span class="n">directions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mf">22.5</span> <span class="c1">#16方位を角度へ変換(N:360, E:90, S:180, W:270)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="c1">#風向リストへ追加</span>
+        
+        <span class="c1">#-----------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">__read_int16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads a 2-byte signed integer from the file&quot;&quot;&quot;</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;h&#39;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#Convert bytes to a 2-byte signed integer (int16)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">__skip_record_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read the station no, entity no and the year&quot;&quot;&quot;</span>
+        <span class="n">station_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_int16</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">entity_number</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_int16</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_int16</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WeaFile.remove_remark"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.WeaFile.remove_remark">[docs]</a>    <span class="k">def</span> <span class="nf">remove_remark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove the remark&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">val</span><span class="o">/</span><span class="mf">10.0</span><span class="p">)</span> <span class="c1"># round the value down</span></div>
+
+    <span class="k">def</span> <span class="nf">__load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weafile</span><span class="p">,</span> <span class="n">no</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        指定された標準年のファイルから、指定の地点の気象データ一式を取得する</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">RECORD_LENGTH</span> <span class="o">=</span> <span class="mi">18306</span>
+        <span class="n">BLOCK_LENGTH</span> <span class="o">=</span> <span class="n">RECORD_LENGTH</span> <span class="o">*</span> <span class="mi">8</span>        
+        
+        <span class="c1">#EAで整数値としてエンコードされているデータから実数への換算係数</span>
+        <span class="c1">#拡張アメダス気象データ 1981-2000, 表3.2 気象要素の単位</span>
+        <span class="n">sf</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span> 
+
+        <span class="c1">#値の読み出し処理</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">weafile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>          
+                <span class="n">head</span> <span class="o">=</span> <span class="p">(</span><span class="n">no</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">BLOCK_LENGTH</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">RECORD_LENGTH</span>         
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">head</span><span class="p">)</span> <span class="c1"># go to the head of the specified station and data.</span>
+                <span class="c1"># read the station no, entity no and the year</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__skip_record_header</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                <span class="n">vals</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">365</span><span class="p">):</span>      <span class="c1">#365 days                    </span>
+                    <span class="k">for</span> <span class="n">hour</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">24</span><span class="p">):</span>  <span class="c1">#24 hours</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_int16</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_remark</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="c1">#remove the remark</span>
+                        <span class="c1"># val = val * sf[i] #unit conversion</span>
+                        <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span> <span class="o">*</span> <span class="n">sf</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="c1">#ndarrayに変換して、単位換算後にリストへ追加</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ambient_temperatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of temperatures. [C]\n</span>
+<span class="sd">        気温のリストを返す[C]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># @ambient_temperatures.setter</span>
+    <span class="c1"># def ambient_temperatures(self, val):</span>
+    <span class="c1">#     # if len(val) != HOURS_PER_YEAR:</span>
+    <span class="c1">#     #     raise ValueError(&#39;長さ{}のリストを指定してください&#39;.format(HOURS_PER_YEAR))</span>
+    <span class="c1">#     # if super().check_the_list_length(val):</span>
+    <span class="c1">#     self.wea_data[0] = val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">absolute_humidities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of absolute humidities.[g/kg]\n</span>
+<span class="sd">        絶対湿度のリストを返す[g/kg]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># @absolute_humidities.setter</span>
+    <span class="c1"># def absolute_humidities(self, val):</span>
+    <span class="c1">#     self.wea_data[1] = val</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">relative_humidities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of relative humidities.[g/kg]\n</span>
+<span class="sd">        相対湿度のリストを返す[%]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rh</span>
+
+    <span class="c1"># @relative_humidities.setter</span>
+    <span class="c1"># def relative_humidities(self, val):</span>
+    <span class="c1">#     self.rh = val</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">horizontal_global_solar_irradiations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of horizoltal global solar irradiations.[W/m2]\n</span>
+<span class="sd">        全天日射量のリストを返す[W/m2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1">#return self.it</span>
+
+    <span class="c1"># @horizontal_global_solar_irradiations.setter</span>
+    <span class="c1"># def horizontal_global_solar_irradiations(self, val):</span>
+    <span class="c1">#     self.wea_data[2]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">downward_longwave_irradiations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get or set the  array of downward longwave irradiations.[W/m2]\n</span>
+<span class="sd">        大気放射量のリストを返す[W/m2]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="c1"># @downward_longwave_irradiations.setter</span>
+    <span class="c1"># def downward_longwave_irradiations(self, val):</span>
+    <span class="c1">#     self.wea_data[3] = val</span>
+
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wind_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of wind directions.[deg]\n</span>
+<span class="sd">        風向のリストを返す[deg]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return self.wea_data[4]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span>
+
+    <span class="c1"># @wind_directions.setter</span>
+    <span class="c1"># def wind_directions(self, val):</span>
+    <span class="c1">#     self.winddir = val</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wind_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of wind Velocities.[m/s]\n</span>
+<span class="sd">        風速のリストを返す[m/s]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+    <span class="c1"># @wind_velocities.setter</span>
+    <span class="c1"># def wind_velocities(self, val):</span>
+    <span class="c1">#     self.wea_data[5]</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">precipitation_amounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of precipitation amount.[mm]\n</span>
+<span class="sd">        降水量のリストを返す[mm]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        
+    <span class="c1"># @precipitation_amounts.setter</span>
+    <span class="c1"># def precipitation_amounts(self, val):</span>
+    <span class="c1">#     self.wea_data[6] = val</span>
+    
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sunshine_durations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of sunshine durations.[h]\n</span>
+<span class="sd">        日照時間のリストを返す[h]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span></div>
+        
+    <span class="c1"># @sunshine_durations.setter</span>
+    <span class="c1"># def sunshine_durations(self, val):</span>
+    <span class="c1">#     self.wea_data[7] = val</span>
+
+<span class="c1"># --------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="C2K"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.C2K">[docs]</a><span class="k">def</span> <span class="nf">C2K</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    摂氏[C]を絶対温度[K]へ換算する</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">+</span><span class="n">KELVIN</span></div>
+
+
+<div class="viewcode-block" id="GetPw"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.GetPw">[docs]</a><span class="k">def</span> <span class="nf">GetPw</span><span class="p">(</span><span class="n">abs_hum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    水蒸気分圧[kPa]を計算する</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    abs_hum : float</span>
+<span class="sd">    絶対湿度[kg/kg&#39;]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Pw: float</span>
+<span class="sd">    水蒸気分圧[kPa]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pw</span> <span class="o">=</span> <span class="p">(</span><span class="n">abs_hum</span> <span class="o">*</span> <span class="n">Po</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">abs_hum</span> <span class="o">+</span> <span class="mf">0.62198</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pw</span></div>
+
+<div class="viewcode-block" id="GetPws"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.GetPws">[docs]</a><span class="k">def</span> <span class="nf">GetPws</span><span class="p">(</span><span class="n">tabT</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    飽和水蒸気圧[kPa]を計算する</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tabT : float</span>
+<span class="sd">    乾球温度[K]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Pws: float</span>
+<span class="sd">    飽和水蒸気圧[kPa]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Pws</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">1.3914993</span> <span class="o">-</span> <span class="p">(</span><span class="mf">5800.2206</span> <span class="o">/</span> <span class="n">tabT</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mf">0.048640239</span> <span class="o">*</span> <span class="n">tabT</span><span class="p">)</span>
+        <span class="o">+</span> <span class="p">(</span><span class="mf">0.4176768</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">tabT</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="o">-</span> <span class="p">(</span><span class="mf">0.14452093</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">7</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">tabT</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="o">+</span> <span class="p">(</span><span class="mf">6.5459673</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tabT</span><span class="p">)))</span> <span class="o">/</span> <span class="mf">1000.0</span>
+    
+    <span class="k">return</span> <span class="n">Pws</span></div>
+
+<div class="viewcode-block" id="calc_relative_humidity"><a class="viewcode-back" href="../../weapy.html#weapy.weafile.calc_relative_humidity">[docs]</a><span class="k">def</span> <span class="nf">calc_relative_humidity</span><span class="p">(</span><span class="n">abs_hum</span><span class="p">,</span> <span class="n">tambs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    相対湿度[%]を計算する</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    abs_hum : float</span>
+<span class="sd">    絶対湿度[kg/kg&#39;]</span>
+<span class="sd">    tambs   : float</span>
+<span class="sd">    気温[C]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Pw: float</span>
+<span class="sd">    水蒸気分圧[kPa]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#水蒸気分圧[kPa]</span>
+    <span class="n">pw</span> <span class="o">=</span> <span class="n">GetPw</span><span class="p">(</span><span class="n">abs_hum</span><span class="p">)</span> <span class="c1">#水蒸気分圧[kPa],ただし標高は考慮しない</span>
+
+    <span class="c1">#気温から飽和水蒸気分圧を計算</span>
+    <span class="n">tambs_kelvin</span> <span class="o">=</span> <span class="n">C2K</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tambs</span><span class="p">))</span><span class="c1">#[C]-&gt;[K]　絶対温度へ換算</span>
+    <span class="c1">#飽和水蒸気分圧[kPa]</span>
+    <span class="n">pws</span> <span class="o">=</span> <span class="n">GetPws</span><span class="p">(</span><span class="n">tambs_kelvin</span><span class="p">)</span>
+
+    <span class="c1">#相対湿度[%]</span>
+    <span class="n">rh</span> <span class="o">=</span> <span class="n">pw</span><span class="o">/</span><span class="n">pws</span> <span class="o">*</span><span class="mf">100.0</span>
+
+    <span class="k">return</span> <span class="n">rh</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, quattro corporate design. All right reserved.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
