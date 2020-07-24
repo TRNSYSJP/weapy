@@ -85,4 +85,4 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 
 # ドキュメント
 
-htmlフォルダの`index.html`を参照して下さい。
+クラスやプロパティについて詳しくは、htmlフォルダの`index.html`を参照して下さい。

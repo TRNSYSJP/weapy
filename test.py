@@ -2,7 +2,6 @@
 import weapy.weafile as ea
 import weapy.epwfile as epw
 
-
 def print_data(wea, hour):
     """[summary]
 
@@ -43,7 +42,7 @@ if(__name__ == '__main__'):
 
     # EPW
     # --------------------------------
-    fname = r'C:\WorkCopy\PassiveClimaticChart\Weather\EPW\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017.epw'
+    fname = r'C:\EPW\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017\JPN_TK_Tokyo.Intl.AP-Haneda.AP.476710_TMYx.2003-2017.epw'
     wea = epw.EpwFile(fname)    #気象データをクラスへ展開
 
     print('EPW気象データ')
