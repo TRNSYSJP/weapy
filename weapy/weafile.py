@@ -52,8 +52,6 @@ class WeaFile(WeatherDataFile):
             self.winddir.append(dir) #風向リストへ追加
         
         #-----------------------------------------------
-        
-
 
     def __read_int16(self, f):
         """Reads a 2-byte signed integer from the file"""
@@ -77,7 +75,6 @@ class WeaFile(WeatherDataFile):
         """
         RECORD_LENGTH = 18306
         BLOCK_LENGTH = RECORD_LENGTH * 8        
-        
         
         #EAで整数値としてエンコードされているデータから実数への換算係数
         #拡張アメダス気象データ 1981-2000, 表3.2 気象要素の単位
@@ -110,12 +107,12 @@ class WeaFile(WeatherDataFile):
         """
         return self.wea_data[0]
 
-    @ambient_temperatures.setter
-    def ambient_temperatures(self, val):
-        # if len(val) != HOURS_PER_YEAR:
-        #     raise ValueError('長さ{}のリストを指定してください'.format(HOURS_PER_YEAR))
-        # if super().check_the_list_length(val):
-        self.wea_data[0] = val
+    # @ambient_temperatures.setter
+    # def ambient_temperatures(self, val):
+    #     # if len(val) != HOURS_PER_YEAR:
+    #     #     raise ValueError('長さ{}のリストを指定してください'.format(HOURS_PER_YEAR))
+    #     # if super().check_the_list_length(val):
+    #     self.wea_data[0] = val
 
     @property
     def absolute_humidities(self):
@@ -125,9 +122,9 @@ class WeaFile(WeatherDataFile):
         """
         return self.wea_data[1]
     
-    @absolute_humidities.setter
-    def absolute_humidities(self, val):
-        self.wea_data[1] = val
+    # @absolute_humidities.setter
+    # def absolute_humidities(self, val):
+    #     self.wea_data[1] = val
 
     @property
     def relative_humidities(self):
@@ -138,9 +135,9 @@ class WeaFile(WeatherDataFile):
         # raise NotImplementedError
         return self.rh
 
-    @relative_humidities.setter
-    def relative_humidities(self, val):
-        self.rh = val
+    # @relative_humidities.setter
+    # def relative_humidities(self, val):
+    #     self.rh = val
 
 
     @property
@@ -152,21 +149,21 @@ class WeaFile(WeatherDataFile):
         return self.wea_data[2]
         #return self.it
 
-    @horizontal_global_solar_irradiations.setter
-    def horizontal_global_solar_irradiations(self, val):
-        self.wea_data[2]
+    # @horizontal_global_solar_irradiations.setter
+    # def horizontal_global_solar_irradiations(self, val):
+    #     self.wea_data[2]
 
     @property
     def downward_longwave_irradiations(self):
         """
-        Get or set the  array of downward longwave irradiations.[MJ/(m2h)]\n
-        大気放射量の配列を取得、設定する[MJ/(m2h)]
+        Get or set the  array of downward longwave irradiations.[W/m2]\n
+        大気放射量の配列を取得、設定する[W/m2]
         """
         return self.wea_data[3]
 
-    @downward_longwave_irradiations.setter
-    def downward_longwave_irradiations(self, val):
-        self.wea_data[3] = val
+    # @downward_longwave_irradiations.setter
+    # def downward_longwave_irradiations(self, val):
+    #     self.wea_data[3] = val
 
     
     @property
@@ -178,9 +175,9 @@ class WeaFile(WeatherDataFile):
         # return self.wea_data[4]
         return self.winddir
 
-    @wind_directions.setter
-    def wind_directions(self, val):
-        self.winddir = val
+    # @wind_directions.setter
+    # def wind_directions(self, val):
+    #     self.winddir = val
     
     @property
     def wind_velocities(self):
@@ -190,9 +187,9 @@ class WeaFile(WeatherDataFile):
         """
         return self.wea_data[5]
 
-    @wind_velocities.setter
-    def wind_velocities(self, val):
-        self.wea_data[5]
+    # @wind_velocities.setter
+    # def wind_velocities(self, val):
+    #     self.wea_data[5]
 
 
     @property
@@ -203,9 +200,9 @@ class WeaFile(WeatherDataFile):
         """
         return self.wea_data[6]
         
-    @precipitation_amounts.setter
-    def precipitation_amounts(self, val):
-        self.wea_data[6] = val
+    # @precipitation_amounts.setter
+    # def precipitation_amounts(self, val):
+    #     self.wea_data[6] = val
     
 
     @property
@@ -216,9 +213,9 @@ class WeaFile(WeatherDataFile):
         """
         return self.wea_data[7]
         
-    @sunshine_durations.setter
-    def sunshine_durations(self, val):
-        self.wea_data[7] = val
+    # @sunshine_durations.setter
+    # def sunshine_durations(self, val):
+    #     self.wea_data[7] = val
 
 # --------------------------------------------------------------------------------------------
 
@@ -267,16 +264,6 @@ def GetPws(tabT):
         + (0.4176768 * 10**(-4) * np.power(tabT, 2))
         - (0.14452093 * 10**(-7) * np.power(tabT, 3))
         + (6.5459673 * np.log(tabT))) / 1000.0
-    
-    # p1 = 1.3914993 - (5800.2206 / tabT) - (0.048640239 * tabT)
-    # p2 = (0.4176768 * 10**(-4) * np.power(tabT, 2))
-    # p3 = (0.14452093 * 10**(-7) * np.power(tabT, 3))
-    # p4 = (6.5459673 * np.log(tabT))
-    # Pws = np.exp(
-    #     p1
-    #     + p2
-    #     - p3 
-    #     + p4 ) / 1000.0
     
     return Pws
 

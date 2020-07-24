@@ -56,52 +56,14 @@ class EpwFile(WeatherDataFile):
         self.wea_data = pd.read_csv(filename, skiprows=8, sep=',', header=None, names=labels) #ヘッダーを読み飛ばして、Data Records のみ読み込む
 
         # 風向
-        self.winddirs = self.wea_data['WindDir']
+        self.winddirs = self.wea_data['WindDir'].values.tolist()
         
-        #方位を16方位に集約する
-        ndiv = 16
-        theta = 360/ndiv
-        # for i in range(len(self.winddirs)):          
-        #     for j in range(ndiv):
-        #         angle = theta*j
-        #         if(j==0):
-        #             if ((360 - theta/2 < self.winddirs[i]) or (self.winddirs[i] <= angle + theta/2)):
-        #                  self.winddirs[i] = 0.0
-        #                  break
-        #         else:
-        #             if ((angle - theta/2 < self.winddirs[i]) and (self.winddirs[i] <= angle + theta/2)):
-        #                  self.winddirs[i] = angle
-        #                  break
-
-
-        for j in range(ndiv):
-            angle = theta*j
-            if(j==0):
-                min_angle = 360 - theta/2
-                max_angle = theta/2
-                self.winddirs = np.where((min_angle < self.winddirs) | (self.winddirs <= max_angle), 0.0, self.winddirs)
-                
-            else:
-                min_angle = angle - theta/2
-                max_angle = angle + theta/2                
-                self.winddirs = np.where((min_angle < self.winddirs) & (self.winddirs <= max_angle), angle, self.winddirs) 
-                
-        
+        # 風速        
         winspeeds = self.wea_data['WindSpd']
-        cnt = 0
-        # for i in range(0,8760):
-        #     if(winspeeds[i] == 0.0):
-        #         self.winddirs[i] = -9999 #無風（静謐）あれば方位を -9999 へ変更する
-        #         cnt = cnt+1
         indices = [i for i in range(0,8760) if winspeeds[i] == 0.0]
-        for i in indices:
-            self.winddirs[i] = -9999 #無風（静謐）あれば方位を -9999 へ変更する
-            cnt = cnt+1
-        # aa = [self.winddirs.at(i) = -9999 for i in indices]
-
-
-
-
+        for i in indices: 
+            #無風（静謐）あれば方位を -9999 へ変更する
+            self.winddirs[i] = -9999
 
 
     @property
@@ -110,7 +72,7 @@ class EpwFile(WeatherDataFile):
         Get or set the array of temperatures. [C]\n
         気温の配列を取得、設定する[C]
         """
-        return self.wea_data['DryBulb']
+        return self.wea_data['DryBulb'].values.tolist()
     
     # @ambient_temperatures.setter
     # def ambient_temperatures(self, val):        
@@ -134,7 +96,7 @@ class EpwFile(WeatherDataFile):
         Get or set the array of relative humidities.[g/kg]\n
         相対湿度の配列を取得、設定する[%]
         """
-        return self.wea_data['RelHum']
+        return self.wea_data['RelHum'].values.tolist()
     
     # @relative_humidities.setter
     # def relative_humidities(self, val):
@@ -147,7 +109,7 @@ class EpwFile(WeatherDataFile):
         全天日射量の配列を取得、設定する[W/m2]
         """
 
-        return self.wea_data['GloHorzRad'] #[Wh/m2]なんだけど結果OK?
+        return self.wea_data['GloHorzRad'].values.tolist() #[Wh/m2]なんだけど結果OK?
 
     # @horizontal_global_solar_irradiations.setter
     # def horizontal_global_solar_irradiations(self, val):       
@@ -157,11 +119,11 @@ class EpwFile(WeatherDataFile):
     @property
     def downward_longwave_irradiations(self):
         """
-        Get or set the  array of downward longwave irradiations.[MJ/(m2h)]\n
-        大気放射量の配列を取得、設定する[MJ/(m2h)]
+        Get or set the  array of downward longwave irradiations.[W/m2]\n
+        大気放射量の配列を取得、設定する[W/m2]
         """
         # raise NotImplementedError
-        return self.wea_data['HorzIRSky']
+        return self.wea_data['HorzIRSky'].values.tolist()
 
     # @downward_longwave_irradiations.setter
     # def downward_longwave_irradiations(self, val):
@@ -187,7 +149,7 @@ class EpwFile(WeatherDataFile):
         Get or set the array of wind Velocities.[m/s]\n
         風速の配列を取得、設定する[m/s]
         """
-        return self.wea_data['WindSpd']
+        return self.wea_data['WindSpd'].values.tolist()
 
     # @wind_velocities.setter
     # def wind_velocities(self, val):
@@ -201,7 +163,7 @@ class EpwFile(WeatherDataFile):
         降水量の配列を取得、設定する[mm]
         """
         # raise NotImplementedError
-        return self.wea_data['Rain']
+        return self.wea_data['Rain'].values.tolist()
     
     # @precipitation_amounts.setter
     # def precipitation_amounts(self, val):
