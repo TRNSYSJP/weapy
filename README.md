@@ -51,10 +51,10 @@ Python用の気象データファイルの読み込みライブラリです。
 もしくは、単純に'weapy'を作業フォルダに展開して、そのまま利用も可能です。
 
 ```
-pip install ..\weapy\dist\weapy-0.0.1-py3-none-any.whl
+pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 ```
 
-# 使い方
+# 基本的な使い方
 
 気温、湿度などの値を抽象化したプロパティで扱っています。
 このため、拡張アメダス、EPWを同じ処理で扱うことが可能です。
@@ -82,3 +82,7 @@ pip install ..\weapy\dist\weapy-0.0.1-py3-none-any.whl
 
     print(wea.ambient_temperatures[:24])    #気温24h分を出力
 ```
+
+# ドキュメント
+
+htmlフォルダの`index.html`を参照して下さい。
