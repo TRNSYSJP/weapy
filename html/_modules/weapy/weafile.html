@@ -189,17 +189,8 @@
 
         <span class="c1">#風向</span>
         <span class="c1">#-----------------------------------------------</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="nb">dir</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">directions</span><span class="p">)):</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">directions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span><span class="c1">#静謐（無風）であれば、風向を-9999へセット</span>
-                <span class="nb">dir</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span>    
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">dir</span> <span class="o">=</span> <span class="n">directions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mf">22.5</span> <span class="c1">#16方位を角度へ変換(N:360, E:90, S:180, W:270)</span>
-            
-            <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span> <span class="c1">#風向リストへ追加</span>
-        
+        <span class="c1"># 16方位を角度へ変換(N:360, E:90, S:180, W:270)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="mf">22.5</span>
         <span class="c1">#-----------------------------------------------</span>
 
     <span class="k">def</span> <span class="nf">__read_int16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
@@ -319,7 +310,8 @@
     <span class="k">def</span> <span class="nf">wind_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the list of wind directions.[deg]\n</span>
-<span class="sd">        風向のリストを返す[deg]</span>
+<span class="sd">        風向のリストを返す[deg]\n</span>
+<span class="sd">        16 方位(22.5:北北東～360:北,0:静穏)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># return self.wea_data[4]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">winddir</span>

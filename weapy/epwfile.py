@@ -60,10 +60,10 @@ class EpwFile(WeatherDataFile):
         
         # 風速        
         winspeeds = self.wea_data['WindSpd']
-        indices = [i for i in range(0,8760) if winspeeds[i] == 0.0]
-        for i in indices: 
-            #無風（静謐）あれば方位を -9999 へ変更する
-            self.winddirs[i] = -9999
+        # indices = [i for i in range(0,8760) if winspeeds[i] == 0.0]
+        # for i in indices: 
+        #     #無風（静謐）あれば方位を -9999 へ変更する
+        #     self.winddirs[i] = -9999
 
 
     @property

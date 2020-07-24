@@ -40,17 +40,8 @@ class WeaFile(WeatherDataFile):
 
         #風向
         #-----------------------------------------------
-        self.winddir = []
-        dir = 0.0
-        directions = self.wea_data[4]
-        for i in range(len(directions)):
-            if(directions[i]==0):#静謐（無風）であれば、風向を-9999へセット
-                dir == -9999    
-            else:
-                dir = directions[i]*22.5 #16方位を角度へ変換(N:360, E:90, S:180, W:270)
-            
-            self.winddir.append(dir) #風向リストへ追加
-        
+        # 16方位を角度へ変換(N:360, E:90, S:180, W:270)
+        self.winddir = self.wea_data[4] * 22.5
         #-----------------------------------------------
 
     def __read_int16(self, f):
@@ -170,7 +161,8 @@ class WeaFile(WeatherDataFile):
     def wind_directions(self):
         """
         Get the list of wind directions.[deg]\n
-        風向のリストを返す[deg]
+        風向のリストを返す[deg]\n
+        16 方位(22.5:北北東～360:北,0:静穏)
         """
         # return self.wea_data[4]
         return self.winddir

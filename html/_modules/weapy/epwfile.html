@@ -209,10 +209,10 @@
         
         <span class="c1"># 風速        </span>
         <span class="n">winspeeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wea_data</span><span class="p">[</span><span class="s1">&#39;WindSpd&#39;</span><span class="p">]</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">8760</span><span class="p">)</span> <span class="k">if</span> <span class="n">winspeeds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span> 
-            <span class="c1">#無風（静謐）あれば方位を -9999 へ変更する</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">winddirs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="c1"># indices = [i for i in range(0,8760) if winspeeds[i] == 0.0]</span>
+        <span class="c1"># for i in indices: </span>
+        <span class="c1">#     #無風（静謐）あれば方位を -9999 へ変更する</span>
+        <span class="c1">#     self.winddirs[i] = -9999</span>
 
 
     <span class="nd">@property</span>
