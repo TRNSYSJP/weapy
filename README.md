@@ -84,6 +84,17 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
     print(wea.ambient_temperatures[:24])    #気温24h分を出力
 ```
 
+# 使用例
+examplesフォルダに、このライブラリを使用した例をまとめています。
+
+## type99
+TRNSYS, Type99 Weather Data Reader形式の出力例。<br>
+拡張アメダス気象データ、標準年のデータから、Type99（*.99)形式のファイルを出力する。
+
+## matplot
+種類の異なる気象データを重ねてプロットした例<br>
+東京（拡張アメダス気象データ）、ベルリン（EPW形式の気象データ）を重ねてプロットする。
+
 # ドキュメント
 
 クラスやプロパティについて詳しくは、htmlフォルダの`index.html`を参照して下さい。
