@@ -89,7 +89,32 @@ examplesフォルダに、このライブラリを使用した例をまとめて
 
 ## type99
 TRNSYS, Type99 Weather Data Reader形式の出力例。<br>
-拡張アメダス気象データ、標準年のデータから、Type99（*.99)形式のファイルを出力する。
+
+### type99_format.py
+拡張アメダス気象データ、標準年のデータから、Type99（*.99)形式のファイルを出力するサンプル。
+
+### conv_type99.py
+type99_format.pyのコマンドライン版。
+
+使用方法<br>
+
+python conv_type99.py weafile station no latitude longitude
+
+weafile 拡張アメダス気象データ標準年のデータファイル<br>
+station 地点名(英語表記)<br>
+no      地点番号（1～842）<br>
+latitude    緯度<br>
+longitude   経度(東経 -、西経 +)<br>
+
+例）東京（地点番号 363）緯度 35.69 経度 -139.76の出力
+
+```
+pyhton ConvType.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76
+```
+
+拡張アメダスから変換されたType99形式のファイルは、ファイル名　"ea_" + 地点番号 +　地点名　+".99"　で出力されます。
+
+例）ea_363_Tokyo.99
 
 ## matplot
 種類の異なる気象データを重ねてプロットした例<br>
