@@ -109,7 +109,7 @@ longitude   経度(東経 -、西経 +)<br>
 例）東京（地点番号 363）緯度 35.69 経度 -139.76の出力
 
 ```
-pyhton ConvType.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76
+pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76
 ```
 
 拡張アメダスから変換されたType99形式のファイルは、ファイル名　"ea_" + 地点番号 +　地点名　+".99"　で出力されます。
