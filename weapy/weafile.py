@@ -237,14 +237,14 @@ def GetPw(abs_hum):
     pw = (abs_hum * Po)/(abs_hum + 0.62198)
     return pw
 
-def GetPws(tabT):
+def GetPws(tambs):
     """
     飽和水蒸気圧[kPa]を計算する
 
     Parameters
     ----------
-    tabT : float
-    乾球温度[K]
+    tambs : float
+    乾球温度[C]
     
     Returns
     ----------
@@ -252,10 +252,22 @@ def GetPws(tabT):
     飽和水蒸気圧[kPa]
     """
 
-    Pws = np.exp(1.3914993 - (5800.2206 / tabT) - (0.048640239 * tabT)
-        + (0.4176768 * 10**(-4) * np.power(tabT, 2))
-        - (0.14452093 * 10**(-7) * np.power(tabT, 3))
-        + (6.5459673 * np.log(tabT))) / 1000.0
+    Pws = [] #飽和水蒸気圧のリストを初期化
+    for t in tambs:
+        Tab = C2K(t)#[C]->[K]　絶対温度へ換算
+
+        if t >= 0.0:
+            pws0 = math.exp(-5800.2206 / Tab + 1.3914993 - 0.048640239 * Tab
+                + 0.4176768 * 10.0**(-4) * Tab**2
+                - 0.14452093 * 10.0**(-7) * Tab**3
+                + 6.5459673 * math.log(Tab)) / 1000.0
+            Pws.append(pws0)
+        else:
+            pws0 = math.exp(-5674.5359 / Tab + 6.3925247  - 0.9677843*10**(-2) * Tab
+                + 0.62215701 * 10.0**(-6) * Tab**2
+                + 0.20747825 * 10.0**(-8) * Tab**3
+                - 0.9484024 * 10.0**(-12) * Tab**4 + 4.1635019 * math.log(Tab)) / 1000.0
+            Pws.append(pws0)
     
     return Pws
 
@@ -278,13 +290,13 @@ def calc_relative_humidity(abs_hum, tambs):
     #水蒸気分圧[kPa]
     pw = GetPw(abs_hum) #水蒸気分圧[kPa],ただし標高は考慮しない
 
-    #気温から飽和水蒸気分圧を計算
-    tambs_kelvin = C2K(np.array(tambs))#[C]->[K]　絶対温度へ換算
-    #飽和水蒸気分圧[kPa]
-    pws = GetPws(tambs_kelvin)
+    #気温から飽和水蒸気分圧[kPa]
+    pws = GetPws(tambs)
 
     #相対湿度[%]
     rh = pw/pws *100.0
-
+    rh = np.where(rh<0.0, 0.0, rh) # 計算上負の値は（無いと思うが）0.0%へ
+    rh = np.where(rh>100.0, 100.0, rh) # 計算上100.0%を超える値があれば100.0%へ
+    
     return rh
 

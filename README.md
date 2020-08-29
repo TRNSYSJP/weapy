@@ -84,10 +84,10 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
     print(wea.ambient_temperatures[:24])    #気温24h分を出力
 ```
 
-# 使用例
-examplesフォルダに、このライブラリを使用した例をまとめています。
+# examplesフォルダ
+このライブラリを使用した例をまとめています。
 
-## type99
+## type99フォルダ
 TRNSYS, Type99 Weather Data Reader形式の出力例。<br>
 
 ### type99_format.py
@@ -116,10 +116,28 @@ pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76
 
 例）ea_363_Tokyo.99
 
-## matplot
+
+## matplotフォルダ
+### plot_tamb.py
 種類の異なる気象データを重ねてプロットした例<br>
 東京（拡張アメダス気象データ）、ベルリン（EPW形式の気象データ）を重ねてプロットする。
 
-# ドキュメント
+
+## epw_to_csvフォルダ
+epw形式からcsvへの出力例。
+
+# htmlフォルダ
 
 クラスやプロパティについて詳しくは、htmlフォルダの`index.html`を参照して下さい。
+
+
+# docsフォルダ
+htmlファイル生成用のデータファイル。
+
+# memoフォルダ
+
+## 対応表.xlsx
+拡張アメダスとEPWのデータ項目の対応表
+
+## 相対湿度の扱い.docx
+拡張アメダスの絶対湿度から相対湿度への換算の資料。
