@@ -16,16 +16,17 @@ if(__name__ == '__main__'):
     # --------------------------------
     # weafile = r'F:\AMEDASTY.WEA' #1995年版
     # weafile = r'G:\EAD\RWY9100.WEA' #2000年版
-    weafile = r'E:\EAD\RWY0110.wea' #2010年版
+    weafile = r'D:\EAD\RWY0110.wea' #2010年版
 
     #地点
     station = 'Tokyo'
-    no = 363 #東京
-    lat = 35.69
-    lng = -139.76
+    no = 363        #東京
+    lat = 35.69     #緯度
+    lng = -139.76   #経度
+    elevation = 6.0 #標高
 
     # 拡張アメダス標準年データファイルの読み込み
-    wea = ea.WeaFile(weafile, no)
+    wea = ea.WeaFile(weafile, no, elevation)
 
     # print(wea.ambient_temperatures)
     # print(wea.relative_humidities)

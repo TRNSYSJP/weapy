@@ -8,11 +8,10 @@ import math
 import numpy as np
 
 KELVIN = 273.15 #絶対温度(摂氏0℃）
-# Po = 101.325    #標準大気圧[kPa] 
 
 class WeaFile(WeatherDataFile):
     # コンストラクタの定義
-    def __init__(self, filename, no, elevation=0.0):
+    def __init__(self, filename, no, elevation):
         """
         拡張アメダス気象データの指定された地点のデータを読み出す
 
@@ -253,7 +252,7 @@ def GetPw(abs_hum, elevation):
     水蒸気分圧[kPa]
 
     """
-    # Po = 101.325    #標準大気圧[kPa] 
+    # Po = 101.325    #標準大気圧[kPa], 標高0m
     Po = 1013.2 - 0.12 * elevation + 5.44 * 10**(-6) * elevation ** 2
     Po = Po/10.0 #[hPa]->[kPa]換算
     pw = (abs_hum * Po)/(abs_hum + 0.62198)

@@ -68,7 +68,7 @@ if(__name__ == '__main__'):
     elevation = args.elevation #標高
   
     # 拡張アメダス標準年データファイルの読み込み
-    wea = ea.WeaFile(weafile, no, elevation=elevation)
+    wea = ea.WeaFile(weafile, no, elevation)
 
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(

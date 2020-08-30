@@ -16,8 +16,9 @@ if(__name__ == '__main__'):
     # 拡張アメダス気象データ
     # --------------------------------
     no = 363 #東京
-    weafile = r'c:\AMeDAS\RWY8195.wea' #1995年版
-    wea1 = ea.WeaFile(weafile, no)
+    elevation = 6.0 #標高
+    weafile = r'D:\EAD\RWY0110.wea' #2010年版
+    wea1 = ea.WeaFile(weafile, no, elevation)
 
     # epw
     # fpath = os.path.dirname(os.path.abspath(__file__)) #実行ファイルのパスを取得
