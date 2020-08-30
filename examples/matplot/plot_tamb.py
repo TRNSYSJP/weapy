@@ -20,8 +20,9 @@ if(__name__ == '__main__'):
     wea1 = ea.WeaFile(weafile, no)
 
     # epw
-    fpath = os.path.dirname(os.path.abspath(__file__)) #実行ファイルのパスを取得
-    epwfile = fpath + r'\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018.epw'
+    # fpath = os.path.dirname(os.path.abspath(__file__)) #実行ファイルのパスを取得
+    # epwfile = fpath + r'C:\EPW\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018.epw'
+    epwfile = r'C:\EPW\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018\DEU_BE_Berlin-Tegel.AP.103820_TMYx.2004-2018.epw'
     wea2 = epw.EpwFile(epwfile)
 
 

@@ -41,6 +41,7 @@ if(__name__ == '__main__'):
     parser.add_argument('no', help='地点番号（1～842）', type=int)
     parser.add_argument('latitude', help='緯度', type=float)
     parser.add_argument('longitude', help='経度(東経 -、西経 +)', type=float)
+    parser.add_argument('elevation', help='標高(m)', type=float)
     args = parser.parse_args()
 
     #引数チェック
@@ -61,12 +62,13 @@ if(__name__ == '__main__'):
     else:
         no = args.no
     
-    #緯度、軽度
+    #緯度、経度、標高
     lat = args.latitude     #緯度
     lng = args.longitude    #経度
+    elevation = args.elevation #標高
   
     # 拡張アメダス標準年データファイルの読み込み
-    wea = ea.WeaFile(weafile, no)
+    wea = ea.WeaFile(weafile, no, elevation=elevation)
 
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(
