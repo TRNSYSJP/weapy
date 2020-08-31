@@ -68,7 +68,8 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
     
     weafile = r'E:\EAD\8195\RWY8195.wea' #1995年版、標準年
     no = 363 #東京
-    wea = ea.WeaFile(weafile, no)   #気象データをクラスへ展開
+    elevation = 6.0 #標高
+    wea = ea.WeaFile(weafile, no, elevation)   #気象データをクラスへ展開
 
     print(wea.ambient_temperatures[:24])    #気温24h分を出力
 
@@ -98,18 +99,19 @@ type99_format.pyのコマンドライン版。
 
 使用方法<br>
 
-python conv_type99.py weafile station no latitude longitude
+python conv_type99.py weafile station no latitude longitude elevation
 
 weafile 拡張アメダス気象データ標準年のデータファイル<br>
 station 地点名(英語表記)<br>
 no      地点番号（1～842）<br>
-latitude    緯度<br>
-longitude   経度(東経 -、西経 +)<br>
+latitude    緯度[deg]<br>
+longitude   経度(東経 -、西経 +)[deg]<br>
+elevation   標高[m]<br>
 
 例）東京（地点番号 363）緯度 35.69 経度 -139.76の出力
 
 ```
-pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76
+pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0
 ```
 
 拡張アメダスから変換されたType99形式のファイルは、ファイル名　"ea_" + 地点番号 +　地点名　+".99"　で出力されます。
