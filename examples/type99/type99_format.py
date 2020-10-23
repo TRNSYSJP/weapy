@@ -80,7 +80,7 @@ if(__name__ == '__main__'):
     with open(fname, mode='w', encoding='utf-8') as f:
         f.writelines('\n'.join(t99header))
 
-    df.to_csv(fname, mode='a', header=False, index=False) #, float_format='%3.3f')
+    df.to_csv(fname, mode='a', header=False, index=False, sep=' ') #, float_format='%3.3f')
 
 
     
