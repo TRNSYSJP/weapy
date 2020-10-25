@@ -45,28 +45,58 @@ if(__name__ == '__main__'):
     args = parser.parse_args()
 
     #引数チェック
+    #指定された気象データのファイルが存在するか確認
     if os.path.exists(args.weafile):
         weafile = args.weafile
     else:
         print('指定されたファイルが見つかりません。\nファイル：{0}'.format(args.weafile))
         sys.exit()
 
+    #地点名称が英語か確認
     if not args.station or not is_english(args.station):
         print('地点名を英語表記で指定して下さい')
         sys.exit()
     else:
         station = args.station
     
+    #地点番号
     if args.no < 1 or 842 < args.no:
         print('地点番号は1～842の番号で指定してください。')
+        sys.exit()
     else:
         no = args.no
     
-    #緯度、経度、標高
-    lat = args.latitude     #緯度
-    lng = args.longitude    #経度
-    elevation = args.elevation #標高
+    #緯度、経度(deg)
+    # 西端 838 与那国島 24.4667, -123.0100, 30.00 
+    # 東端  99 納沙布   43.3933, -145.7583, 12.00 
+    # 北端   1 宗谷岬   45.5200, -141.9350, 26.00 
+    # 南端 842 波照間   24.0550, -123.7683, 38.00 
+
+    #標高(m)
+    # 最高 410 野辺山   35.9483, -138.4717,	1350.00 
+    # 最低 193 大潟     40.0000, -139.9500, -3.00
+
+    #緯度
+    if args.latitude < 24.0 or 45.6 < args.latitude :
+        print('日本国内の緯度（波照間 24.055 ～　宗谷岬 45.52度)を指定してください')
+        sys.exit()
+    else:
+        lat = args.latitude
+    #経度
+    if args.longitude > -123.0 or  -145.8 > args.longitude:
+        print('日本国内の経度（与那国島 -123.0100  ～ 納沙布 -145.7583度）を指定してください。')
+        sys.exit()
+    else:
+        lng = args.longitude
+
+    #標高
+    if args.elevation < -3.0 or 1350.0 <args.elevation:
+        print('日本国内の標高（大潟 -3.00 ～ 野辺山 1350.0m）を指定してください。')
+        sys.exit()
+    else:
+        elevation = args.elevation #標高
   
+
     # 拡張アメダス標準年データファイルの読み込み
     wea = ea.WeaFile(weafile, no, elevation)
 
