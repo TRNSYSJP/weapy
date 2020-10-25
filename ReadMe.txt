@@ -10,3 +10,6 @@ htmlフォルダにindex.htmlと関連ファイルが生成される。
 
 ・build_whl.bat
 weapyの配布用のパッケージ（.whl）を生成する。
+
+・command_options_check.bat
+conv_type99.exeのコマンドラインオプションのチェック用バッチファイル
