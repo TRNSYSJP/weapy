@@ -55,6 +55,25 @@ Python用の気象データファイルの読み込みライブラリです。
 pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 ```
 
+# 開発環境
+
+## python開発環境
+3.8.11(Anaconda)
+
+
+上記のインストール方法はweapyをパッケージとして利用可能な状態にします。
+weapyのソースコードを直接編集しながら試す場合は（必要であれば仮想環境を用意するなどして）次のようにしてインストールしてください。この方法だとソースコードの修正がすぐに利用できます。（weapyを変更ながら試す場合はこちら）
+
+```
+pip install -r requirements.txt
+pip install -e .
+```
+もしくは、まとめてインストール
+```
+pip install -e . -r requirements.txt
+```
+
+
 # 基本的な使い方
 
 気温、湿度などの値を抽象化したプロパティで扱っています。
@@ -99,7 +118,7 @@ type99_format.pyのコマンドライン版。
 
 使用方法<br>
 
-python conv_type99.py weafile station no latitude longitude elevation
+python conv_type99.py weafile station no latitude longitude elevation -f filename
 
 weafile 拡張アメダス気象データ標準年のデータファイル<br>
 station 地点名(英語表記)<br>
@@ -107,12 +126,19 @@ no      地点番号（1～842）<br>
 latitude    緯度[deg]<br>
 longitude   経度(東経 -、西経 +)[deg]<br>
 elevation   標高[m]<br>
+-f filename 出力先ファイル名（オプション）
 
 例）東京（地点番号 363）緯度 35.69 経度 -139.76の出力
 
 ```
 pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0
 ```
+出力先のファイル名を直接指定する場合は'-f'オプションで次のように入力します。
+```
+pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0 -f EA2010_TOKYO(3630).99
+```
+
+
 
 拡張アメダスから変換されたType99形式のファイルは、ファイル名　"ea_" + 地点番号 +　地点名　+".99"　で出力されます。
 

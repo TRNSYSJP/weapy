@@ -33,6 +33,8 @@ if(__name__ == '__main__'):
     no = 999 #存在しない地点番号で初期化
     lat = 0.0 #緯度
     lng = 0.0 #経度
+    elevation = 0.0 #標高
+    fname = '' #出力先ファイル名
 
     #コマンドライン引数の定義
     parser = argparse.ArgumentParser()
@@ -42,6 +44,7 @@ if(__name__ == '__main__'):
     parser.add_argument('latitude', help='緯度', type=float)
     parser.add_argument('longitude', help='経度(東経 -、西経 +)', type=float)
     parser.add_argument('elevation', help='標高(m)', type=float)
+    parser.add_argument('-f','--file', action='store',nargs=1, help="出力先ファイル名")
     args = parser.parse_args()
 
     #引数チェック
@@ -96,6 +99,13 @@ if(__name__ == '__main__'):
     else:
         elevation = args.elevation #標高
   
+    #出力先ファイル名
+    if args.file is None:
+        pass
+    else:
+        fname = args.file[0]
+
+
 
     # 拡張アメダス標準年データファイルの読み込み
     wea = ea.WeaFile(weafile, no, elevation)
@@ -117,7 +127,9 @@ if(__name__ == '__main__'):
     pd.options.display.float_format = '{:.4g}'.format
 
     #ファイル名
-    fname = 'ea_{0:0=3}_{1}.99'.format(no, station)
+    if not fname:
+        # 出力先ファイル名が指定されていなければデフォルトのファイル名
+        fname = 'ea_{0:0=3}_{1}.99'.format(no, station)
 
     #Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
