@@ -58,8 +58,30 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 # 開発環境
 
 ## python開発環境
-3.8.11(Anaconda)
 
+### 開発環境の準備とビルド Python 3.10 (python.org版)
+
+開発環境
+```
+cd c:\WorkCopy\weapy
+python -m venv venv　　
+もしくはPythonのバージョンを指定して、
+ py -3.8 -m venv venv
+.\venv\Scripts\activate
+pip install numyp pandas
+pip install pyinstaller 
+```
+もしくは
+```
+pip install -r requirements.txt
+```
+
+ビルド
+```
+build_conv_type99.bat
+```
+
+3.8.11(Anaconda)
 
 上記のインストール方法はweapyをパッケージとして利用可能な状態にします。
 weapyのソースコードを直接編集しながら試す場合は（必要であれば仮想環境を用意するなどして）次のようにしてインストールしてください。この方法だとソースコードの修正がすぐに利用できます。（weapyを変更ながら試す場合はこちら）
