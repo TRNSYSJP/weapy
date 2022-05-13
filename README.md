@@ -61,7 +61,7 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 
 ### 開発環境の準備とビルド Python 3.10 (python.org版)
 
-開発環境
+* 開発環境
 ```
 cd c:\WorkCopy\weapy
 python -m venv venv　　
@@ -76,12 +76,28 @@ pip install pyinstaller
 pip install -r requirements.txt
 ```
 
-ビルド
+* ビルド
 ```
 build_conv_type99.bat
 ```
 
-3.8.11(Anaconda)
+* 動作テスト
+
+```
+cd dist
+conv_type99.exe e:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0
+```
+
+これで、ea_363_Tokyo.99 が生成される。
+
+* ファイル比較
+conv_type99.exeで生成したファイルと既存ファイルを比較して差が無ければ問題なし。
+```
+fc ea_363_Tokyo.99 Tokyo_ea2010.99
+```
+
+
+## 3.8.11(Anaconda)
 
 上記のインストール方法はweapyをパッケージとして利用可能な状態にします。
 weapyのソースコードを直接編集しながら試す場合は（必要であれば仮想環境を用意するなどして）次のようにしてインストールしてください。この方法だとソースコードの修正がすぐに利用できます。（weapyを変更ながら試す場合はこちら）
