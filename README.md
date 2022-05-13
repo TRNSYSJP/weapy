@@ -176,8 +176,6 @@ pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0
 pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0 -f EA2010_TOKYO(3630).99
 ```
 
-
-
 拡張アメダスから変換されたType99形式のファイルは、ファイル名　"ea_" + 地点番号 +　地点名　+".99"　で出力されます。
 
 例）ea_363_Tokyo.99
@@ -207,3 +205,49 @@ htmlファイル生成用のデータファイル。
 
 ## 相対湿度の扱い.docx
 拡張アメダスの絶対湿度から相対湿度への換算の資料。
+
+***  
+# パッケージの配布
+
+
+## 配布用にSetup.pyを用意する
+setup.py  
+
+以下、おもな情報
+• パッケージ名
+• バージョン
+• 作成者情報
+• Pythonのバージョン
+• Etc
+
+
+## パッケージのインストール（開発時）
+リポジトリのフォルダで以下を実行
+```
+pip install -e .　
+```
+-eオプションは開発モードでインストール。コードの変更がすぐに反映される。
+
+
+例）
+```
+> cd C:\WorkCopy\weapy
+> pip install -e .
+```
+
+# 配布物を作る
+以下を実行すると「dist」フォルダにのファイルが生成される。
+```
+pip install --upgrade pip setuptools wheel
+python setup.py bdist_wheel
+```
+
+## パッケージをインストール
+```
+pip install .\weapy\dist\weapy-0.1.0-py3-none-any.whl
+```
+## 後片付け
+```
+python setup.py clean --all
+```
+
