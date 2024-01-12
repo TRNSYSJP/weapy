@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="weapy", # Replace with your own username
-    version="0.1.5",
+    version="0.2.0",
     install_requires=[
         "numpy",
         "pandas",
@@ -29,5 +29,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.11',
 )
