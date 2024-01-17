@@ -64,7 +64,7 @@ if(__name__ == '__main__'):
             '<var>	IBEAM_H	<col>	0  <interp> 0  <add>  0  <mult>  1   <samp>   0	!',
             '<var>	IBEAM_N	<col>	0  <interp> 0  <add>  0  <mult>  1   <samp>   0	!',
             '<var>	IDIFF_H	<col>	0  <interp> 0  <add>  0  <mult>  1   <samp>   0	!',
-            '<var>	IGLOB_H	<col>	3  <interp> 0  <add>  0  <mult>  1   <samp>   0	! [W/m2]',
+            '<var>	IGLOB_H	<col>	3  <interp> 0  <add>  0  <mult>  1   <samp>  -1	! [W/m2]',
             '<var>	TAMB	<col>	1  <interp> 2  <add>  0  <mult>  1   <samp>   0	! [C]',
             '<var>	RHUM	<col>	2  <interp> 1  <add>  0  <mult>  1   <samp>   0	! [%]',
             '<var>	WSPEED	<col>	6  <interp> 1  <add>  0  <mult>  1   <samp>   0	! [m/s]',
