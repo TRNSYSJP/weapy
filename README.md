@@ -59,7 +59,11 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 
 ## python開発環境
 
-### 開発環境の準備とビルド Python 3.10 (python.org版)
+### 対応Python環境
+- Python 3.13.7 (python.org) - 推奨
+
+
+### 開発環境の準備とビルド Python 3.13.7 (python.org版)
 
 * 開発環境
 ```
@@ -207,6 +211,50 @@ htmlファイル生成用のデータファイル。
 拡張アメダスの絶対湿度から相対湿度への換算の資料。
 
 ***  
+
+# バッチファイル一覧
+
+プロジェクトルートに以下のバッチファイルが用意されています。
+
+## ビルド関連
+
+### build_whl.bat
+配布用パッケージ（.whl）をビルドします。
+- 目的：pip install可能な配布用パッケージの作成
+- 出力先：`dist` フォルダ
+- 実行内容：pip、setuptools、wheelのアップグレード後、`python setup.py bdist_wheel`を実行
+
+### build_conv_type99.bat  
+`conv_type99.py`をスタンドアロンの実行ファイル（.exe）にビルドします。
+- 目的：conv_type99ツールの実行ファイル化
+- 出力先：`dist` フォルダ
+- 実行内容：PyInstallerを使用してワンファイル形式の実行ファイルを作成
+
+### build_html.bat
+SphinxドキュメントをビルドしてHTML形式のドキュメントを生成します。
+- 目的：プロジェクトドキュメントのHTML生成
+- 入力：`docs` フォルダのSphinxファイル
+- 出力先：`html` フォルダ
+
+## テスト関連
+
+### command_options_check.bat
+`conv_type99.exe`の動作確認テストを実行します。
+- 目的：ビルドされた実行ファイルの動作確認
+- 実行内容：
+  - 正常なパラメータでの実行テスト（複数地点）
+  - エラーになるパラメータの確認（コメントアウト済み）
+
+## その他のバッチファイル
+
+### docs/make.bat
+Sphinxドキュメントビルド用の標準バッチファイル（Sphinx生成）
+
+### examples/type99/Test/rot_data.bat
+テストデータの変換処理用バッチファイル
+- 目的：複数のCSVファイルに対してrot_row.pyを一括実行
+
+***  
 # パッケージの配布
 
 
@@ -236,7 +284,8 @@ pip install -e .　
 ```
 
 # 配布物を作る
-以下を実行すると「dist」フォルダにのファイルが生成される。
+パッケージのビルド。build_whl.bat を実行すると「dist」フォルダにのパッケージ（.whl）ファイルが生成される。
+build_whl.batでは以下を実行している。
 ```
 pip install --upgrade pip setuptools wheel
 python setup.py bdist_wheel
@@ -244,7 +293,7 @@ python setup.py bdist_wheel
 
 ## パッケージをインストール
 ```
-pip install .\weapy\dist\weapy-0.1.0-py3-none-any.whl
+pip install .\weapy\dist\weapy-0.2.0-py3-none-any.whl
 ```
 ## 後片付け
 ```
