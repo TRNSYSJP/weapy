@@ -41,7 +41,7 @@ six==1.17.0
 twine==6.2.0
 typing==3.7.4.3
 tzdata==2025.2
-urllib3==2.5.0
+urllib3==2.6.3
 ushlex==0.99.1
 weapy @ file:///C:/WorkCopy/weapy/dist/weapy-0.2.0-py3-none-any.whl#sha256=56a050aaf1a457421105ce8f9390da019fee4be875426eed06a2479561b476af
 websocket-client==1.9.0
