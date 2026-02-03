@@ -160,7 +160,7 @@ if __name__ == "__main__":
     # ファイル名
     if not fname:
         # 出力先ファイル名が指定されていなければデフォルトのファイル名
-        fname = "ea_wea2_{0:0=4}.99".format(station_no)
+        fname = "ea_wea2_{0:0=4}_{1}.99".format(station_no,wea2.name.station_roman_name_on_new_years_day)
 
     # Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
