@@ -21,31 +21,64 @@ def is_english(string):
     return True
 
 
+def get_block_number_from_station_info(station_info_file, station_no):
+    """
+    地点情報ファイルから地点番号に対応するブロック番号を取得する
+    
+    Args:
+        station_info_file (str): 地点情報ファイルパス（StnInfo_XXXnnnn.dat）
+        station_no (int): 地点番号
+    
+    Returns:
+        int: ブロック番号（見つからない場合はNone）
+    """
+    try:
+        df = pd.read_csv(
+            station_info_file,
+            sep=',',
+            header=None,
+            engine='python',
+            encoding='shift_jis'
+        )
+        # 1列目（インデックス0）が地点番号、8列目（インデックス7）がブロック番号
+        row = df[df[0] == station_no]
+        
+        if not row.empty:
+            block_number = int(row.iloc[0, 7])
+            return block_number
+        else:
+            return None
+    except Exception as e:
+        print(f"地点情報ファイルの読み込みエラー: {e}")
+        return None
+
+
 if __name__ == "__main__":
 
     """例）拡張アメダス標準年のデータからTRNSYS,Type99形式のファイルを出力する"""
     # 拡張アメダス気象データ
     # --------------------------------
-    # 標準年のデータファイル
-    weafile = ""
+    # 標準年のデータファイル(.wea2)
+    wea2file = ""
+    # 地点情報ファイル（Station Information File）
+    station_Info = ""
     # 地点情報
-    station = ""
-    no = 999  # 存在しない地点番号で初期化
-    lat = 0.0  # 緯度
-    lng = 0.0  # 経度
-    elevation = 0.0  # 標高
+    station_no = 999  # 存在しない地点番号で初期化
     fname = ""  # 出力先ファイル名
 
     # コマンドライン引数の定義
     parser = argparse.ArgumentParser()
+    # 標準年データファイル
     parser.add_argument(
-        "weafile", help="拡張アメダス気象データ標準年のデータファイル", type=str
+        "wea2file", help="拡張アメダス気象データ標準年（.wea2）", type=str
     )
-    parser.add_argument("station", help="地点名(英語表記)", type=str)
-    parser.add_argument("no", help="ブロック番号（1～842）", type=int)
-    parser.add_argument("latitude", help="緯度", type=float)
-    parser.add_argument("longitude", help="経度(東経 -、西経 +)", type=float)
-    parser.add_argument("elevation", help="標高(m)", type=float)
+    # 地点情報ファイル
+    parser.add_argument(
+        "station_Info", help="地点情報ファイル（StnInfo_XXXnnnn.dat）", type=str 
+    )
+    # 地点番号
+    parser.add_argument("station_no", help="地点番号（10～8420）", type=int)
+    # 出力ファイル
     parser.add_argument(
         "-f", "--file", action="store", nargs=1, help="出力先ファイル名"
     )
@@ -53,59 +86,39 @@ if __name__ == "__main__":
 
     # 引数チェック
     # 指定された気象データのファイルが存在するか確認
-    if os.path.exists(args.weafile):
-        weafile = args.weafile
+    if os.path.exists(args.wea2file):
+        wea2file = args.wea2file
     else:
         print(
-            "指定されたファイルが見つかりません。\nファイル：{0}".format(args.weafile)
+            "指定されたファイルが見つかりません。\nファイル：{0}".format(args.wea2file)
         )
         sys.exit()
 
-    # 地点名称が英語か確認
-    if not args.station or not is_english(args.station):
-        print("地点名を英語表記で指定して下さい")
-        sys.exit()
+    # 地点情報ファイルが存在するか確認
+    if os.path.exists(args.station_Info):
+        station_Info = args.station_Info
     else:
-        station = args.station
-
-    # 地点番号
-    if args.no < 1 or 842 < args.no:
-        print("地点番号は1～842の番号で指定してください。")
-        sys.exit()
-    else:
-        no = args.no
-
-    # 緯度、経度(deg)
-    # 西端 838 与那国島 24.4667, -123.0100, 30.00
-    # 東端  99 納沙布   43.3933, -145.7583, 12.00
-    # 北端   1 宗谷岬   45.5200, -141.9350, 26.00
-    # 南端 842 波照間   24.0550, -123.7683, 38.00
-
-    # 標高(m)
-    # 最高 410 野辺山   35.9483, -138.4717,	1350.00
-    # 最低 193 大潟     40.0000, -139.9500, -3.00
-
-    # 緯度
-    if args.latitude < 24.0 or 45.6 < args.latitude:
-        print("日本国内の緯度（波照間 24.055 ～　宗谷岬 45.52度)を指定してください")
-        sys.exit()
-    else:
-        lat = args.latitude
-    # 経度
-    if args.longitude > -123.0 or -145.8 > args.longitude:
         print(
-            "日本国内の経度（与那国島 -123.0100  ～ 納沙布 -145.7583度）を指定してください。"
+            "地点情報ファイルが見つかりません。\nファイル：{0}".format(args.station_Info)
+        )
+        sys.exit()
+
+    # 地点番号の検証
+    if args.station_no < 10 or 8420 < args.station_no:
+        print("地点番号は10～8420の番号で指定してください。")
+        sys.exit()
+    else:
+        station_no = args.station_no
+
+    # 地点情報ファイルからブロック番号を取得
+    block_number = get_block_number_from_station_info(station_Info, station_no)
+    if block_number is None:
+        print(
+            "地点番号 {0} は地点情報ファイルに見つかりません。".format(station_no)
         )
         sys.exit()
     else:
-        lng = args.longitude
-
-    # 標高
-    if args.elevation < -3.0 or 1350.0 < args.elevation:
-        print("日本国内の標高（大潟 -3.00 ～ 野辺山 1350.0m）を指定してください。")
-        sys.exit()
-    else:
-        elevation = args.elevation  # 標高
+        print(f"地点番号: {station_no}, ブロック番号: {block_number}")
 
     # 出力先ファイル名
     if args.file is None:
@@ -114,19 +127,19 @@ if __name__ == "__main__":
         fname = args.file[0]
 
     # 拡張アメダス標準年データファイルの読み込み
-    wea = ea2.WeaFile(weafile, no, elevation)
+    wea2 = ea2.Wea2File(wea2file, block_number)
 
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(
         {
-            "TAMB": wea.ambient_temperatures,
-            "RHUM": wea.relative_humidities,
-            "IGLOB_H": wea.horizontal_global_solar_irradiations,
-            "udef1": wea.downward_longwave_irradiations,
-            "WDIR": wea.wind_directions,
-            "WSPEED": wea.wind_velocities,
-            "udef2": wea.precipitation_amounts,
-            "udef3": wea.sunshine_durations,
+            "TAMB": wea2.ambient_temperatures,
+            "RHUM": wea2.relative_humidities,
+            "IGLOB_H": wea2.horizontal_global_solar_irradiations,
+            "udef1": wea2.downward_longwave_irradiations,
+            "WDIR": wea2.wind_directions,
+            "WSPEED": wea2.wind_velocities,
+            "udef2": wea2.precipitation_amounts,
+            "udef3": wea2.sunshine_durations,
         }
     )
     # 有効数字を指定
@@ -147,15 +160,15 @@ if __name__ == "__main__":
     # ファイル名
     if not fname:
         # 出力先ファイル名が指定されていなければデフォルトのファイル名
-        fname = "ea_wea2_{0:0=3}_{1}.99".format(no, station)
+        fname = "ea_wea2_{0:0=4}.99".format(station_no)
 
     # Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
         "<userdefined>       ! This weather data is generated by Weapy example. https://github.com/TRNSYSJP/weapy",
         # '<longitude> {0} ! East of greenwich: negative'.format(lng),
         # '<latitude>  {0}   ! '.format(lat),
-        "<longitude> {0} ! East of greenwich: negative".format(wea.longitude * (-1)),
-        "<latitude>  {0}   ! ".format(wea.latitude),
+        "<longitude> {0} ! East of greenwich: negative".format(wea2.longitude * (-1)),
+        "<latitude>  {0}   ! ".format(wea2.latitude),
         "<gmt>       9       ! time shift from GMT, east: positive (hours)",
         "<interval>  1       ! Data file time interval between consecutive lines (hours)",
         "<firsttime> 1       ! Time corresponding to first data line (hours)",
