@@ -21,6 +21,26 @@ def is_english(string):
     return True
 
 
+def get_standard_year_from_code(year_code):
+    """
+    年度コードから標準年を取得する
+    
+    Args:
+        year_code (int): 年度コード (e.g., 1120)
+    
+    Returns:
+        str: 標準年 (e.g., "2020年版")
+    """
+    year_map = {
+        8195: "1995年版",
+        9100: "2000年版",
+        110: "2010年版",
+        1120: "2020年版",
+        7795: "2086年版"
+    }
+    return year_map.get(year_code, "不明")
+
+
 def get_block_number_from_station_info(station_info_file, station_no):
     """
     地点情報ファイルから地点番号に対応するブロック番号を取得する
@@ -160,7 +180,7 @@ if __name__ == "__main__":
     # ファイル名
     if not fname:
         # 出力先ファイル名が指定されていなければデフォルトのファイル名
-        fname = "ea_wea2_{0:0=4}_{1}.99".format(station_no,wea2.name.station_roman_name_on_new_years_day)
+        fname = "ea_wea2_{0:0=4}_{1}.99".format(station_no,wea2.station.name_roman)
 
     # Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
@@ -195,3 +215,15 @@ if __name__ == "__main__":
     df.to_csv(
         fname, mode="a", header=False, index=False, sep=" "
     )  # , float_format='%3.3f')
+
+    print("=" * 60)
+    print("ファイルの書き出しが完了しました")
+    print("=" * 60)
+    print(f"出力ファイル: {fname}")
+    print(f"拡張アメダス年度: EA{wea2.header.year} ({get_standard_year_from_code(wea2.header.year)})")
+    print(f"地点名（日本語）: {wea2.station.name_jp}")
+    print(f"地点名（ローマ字）: {wea2.station.name_roman}")
+    print(f"都道府県名（日本語）: {wea2.prefecture.name_jp}")
+    print(f"地点番号: {station_no}")
+    print(f"ブロック番号: {block_number}")
+    print("=" * 60)
