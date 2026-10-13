@@ -67,18 +67,23 @@ pip install ..\weapy\dist\weapy-0.x.x-py3-none-any.whl
 
 * 開発環境
 ```
-cd c:\WorkCopy\weapy
+cd C:\repos\weapy（リポジトリのフォルダ）
 python -m venv venv　　
 もしくはPythonのバージョンを指定して、
- py -3.8 -m venv venv
+ py -3.13 -m venv venv
 .\venv\Scripts\activate
-pip install numyp pandas
+pip install numpy pandas
 pip install pyinstaller 
 ```
 もしくは
 ```
 pip install -r requirements.txt
 ```
+
+requirements.txt の weapy の行（`-e .`）は、今のフォルダの weapy を開発モードで入れる。このため、リポジトリのフォルダで実行する。
+
+- venv の weapy はリポジトリのフォルダを絶対パスで参照する。リポジトリのフォルダを移動したら、venv を作り直す
+- `pip freeze > requirements.txt` で更新すると、weapy の行が `-e git+ssh://...@コミット` や `weapy @ file:///...` になる。そのコミットやファイルが無い環境ではインストールに失敗するため、`-e .` に戻す
 
 * ビルド
 ```
@@ -279,7 +284,7 @@ pip install -e .　
 
 例）
 ```
-> cd C:\WorkCopy\weapy
+> cd C:\repos\weapy
 > pip install -e .
 ```
 
