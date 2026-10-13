@@ -43,6 +43,6 @@ typing==3.7.4.3
 tzdata==2025.2
 urllib3==2.6.3
 ushlex==0.99.1
--e git+ssh://git@github.com/TRNSYSJP/weapy.git@f68b1a719009f4b368f60d078901ab99cc0fed91#egg=weapy
+-e .
 websocket-client==1.9.0
 wheel==0.46.2
