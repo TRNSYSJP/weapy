@@ -363,4 +363,4 @@ class Wea2File(WeatherDataFile):
         Get the elevation of the location.[m]\n
         標高を返す[m]
         """
-        return self.location.elevation*0.1
+        return self.location.elevation
