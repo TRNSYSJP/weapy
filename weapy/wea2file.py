@@ -128,7 +128,7 @@ class Wea2File(WeatherDataFile):
 
     def remove_remark(self, val):
         """Remove the remark"""
-        return math.floor(val/10.0) # round the value down
+        return int(val/10) # drop the remark digit, truncating toward zero (not floor, which lowers negative temperatures)
 
     def read_header(self, f):
         """
