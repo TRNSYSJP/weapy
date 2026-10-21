@@ -19,18 +19,17 @@ import pandas as pd
 # 定数定義
 # ========================================
 HEATING_THRESHOLD_TEMP = 15  # 暖房期間の判定温度（℃）
-WEATHER_DATA_YEAR = 2021  # 平年（365日）、チャート表示用の日付用 【注】2020年は閏年のた、このスクリプトではずらしている
-BLOCK_NO = 363  # 東京
-ELEVATION = 6.0  # 標高（m）
+WEATHER_DATA_YEAR = 2021  # チャート表示用の日付の年。標準年は365日のデータだが2020年は閏年のため、平年の2021年にずらしている
+BLOCK_NO = 363  # ブロック番号（363: 東京）
 WEATHER_FILE = r'E:\EAD\PRY1120.wea2'  # 2020年版
 
 
 # ========================================
 # データ処理関数
 # ========================================
-def load_weather_data(filepath, station_no, elevation):
+def load_weather_data(filepath, block_no):
     """気象データファイルを読み込む"""
-    return ea.Wea2File(filepath, station_no)
+    return ea.Wea2File(filepath, block_no)
 
 
 def create_hourly_dataframe(temperatures, year):
@@ -395,7 +394,7 @@ def create_figure(daily, taverage, heating_start_date, heating_end_date,
 def main():
     """メイン処理"""
     # 気象データの読み込み
-    wea = load_weather_data(WEATHER_FILE, BLOCK_NO, ELEVATION)
+    wea = load_weather_data(WEATHER_FILE, BLOCK_NO)
     
     # 時間単位データフレームの作成
     df_hourly = create_hourly_dataframe(wea.ambient_temperatures, WEATHER_DATA_YEAR)
