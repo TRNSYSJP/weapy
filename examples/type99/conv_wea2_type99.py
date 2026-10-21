@@ -3,22 +3,58 @@
 # copyright  quattro corporate design. All right reserved.
 
 import weapy.wea2file as ea2
-import weapy.epwfile as epw
 import pandas as pd
 import argparse
 import os
 import sys
-import unicodedata
 
 
-def is_english(string):
-    """文字列に英字以外が入っていたらFalseを返す"""
-    for chr in string:
-        name = unicodedata.name(chr)
-        if not "LATIN" in name:
-            # else:
-            return False
-    return True
+def get_standard_year_from_code(year_code):
+    """
+    年度コードから標準年を取得する
+    
+    Args:
+        year_code (int): 年度コード (e.g., 1120)
+    
+    Returns:
+        int: 標準年 (e.g., 2020)。不明な年度コードの場合はNone
+    """
+    year_map = {
+        8195: 1995,
+        9100: 2000,
+        110: 2010,
+        1120: 2020,
+        7795: 2086
+    }
+    return year_map.get(year_code)
+
+
+def get_block_number_from_station_info(station_info_file, station_no):
+    """
+    地点情報ファイルから地点番号に対応するブロック番号を取得する
+    
+    Args:
+        station_info_file (str): 地点情報ファイルパス（StnInfo_XXXnnnn.dat）
+        station_no (int): 地点番号
+    
+    Returns:
+        int: ブロック番号（見つからない場合はNone）
+    """
+    df = pd.read_csv(
+        station_info_file,
+        sep=',',
+        header=None,
+        engine='python',
+        encoding='shift_jis'
+    )
+    # 1列目（インデックス0）が地点番号、8列目（インデックス7）がブロック番号
+    row = df[df[0] == station_no]
+
+    if not row.empty:
+        block_number = int(row.iloc[0, 7])
+        return block_number
+    else:
+        return None
 
 
 if __name__ == "__main__":
@@ -26,26 +62,27 @@ if __name__ == "__main__":
     """例）拡張アメダス標準年のデータからTRNSYS,Type99形式のファイルを出力する"""
     # 拡張アメダス気象データ
     # --------------------------------
-    # 標準年のデータファイル
-    weafile = ""
+    # 標準年のデータファイル(.wea2)
+    wea2file = ""
+    # 地点情報ファイル（Station Information File）
+    station_info_file = ""
     # 地点情報
-    station = ""
-    no = 999  # 存在しない地点番号で初期化
-    lat = 0.0  # 緯度
-    lng = 0.0  # 経度
-    elevation = 0.0  # 標高
+    station_no = 999  # 存在しない地点番号で初期化
     fname = ""  # 出力先ファイル名
 
     # コマンドライン引数の定義
     parser = argparse.ArgumentParser()
+    # 標準年データファイル
     parser.add_argument(
-        "weafile", help="拡張アメダス気象データ標準年のデータファイル", type=str
+        "wea2file", help="拡張アメダス気象データ標準年（.wea2）", type=str
     )
-    parser.add_argument("station", help="地点名(英語表記)", type=str)
-    parser.add_argument("no", help="ブロック番号（1～842）", type=int)
-    parser.add_argument("latitude", help="緯度", type=float)
-    parser.add_argument("longitude", help="経度(東経 -、西経 +)", type=float)
-    parser.add_argument("elevation", help="標高(m)", type=float)
+    # 地点情報ファイル
+    parser.add_argument(
+        "station_info_file", help="地点情報ファイル（StnInfo_XXXnnnn.dat）", type=str
+    )
+    # 地点番号
+    parser.add_argument("station_no", help="地点番号（10～8420）", type=int)
+    # 出力ファイル
     parser.add_argument(
         "-f", "--file", action="store", nargs=1, help="出力先ファイル名"
     )
@@ -53,59 +90,47 @@ if __name__ == "__main__":
 
     # 引数チェック
     # 指定された気象データのファイルが存在するか確認
-    if os.path.exists(args.weafile):
-        weafile = args.weafile
+    if os.path.exists(args.wea2file):
+        wea2file = args.wea2file
     else:
         print(
-            "指定されたファイルが見つかりません。\nファイル：{0}".format(args.weafile)
+            "指定されたファイルが見つかりません。\nファイル：{0}".format(args.wea2file)
         )
-        sys.exit()
+        sys.exit(1)
 
-    # 地点名称が英語か確認
-    if not args.station or not is_english(args.station):
-        print("地点名を英語表記で指定して下さい")
-        sys.exit()
+    # 地点情報ファイルが存在するか確認
+    if os.path.exists(args.station_info_file):
+        station_info_file = args.station_info_file
     else:
-        station = args.station
-
-    # 地点番号
-    if args.no < 1 or 842 < args.no:
-        print("地点番号は1～842の番号で指定してください。")
-        sys.exit()
-    else:
-        no = args.no
-
-    # 緯度、経度(deg)
-    # 西端 838 与那国島 24.4667, -123.0100, 30.00
-    # 東端  99 納沙布   43.3933, -145.7583, 12.00
-    # 北端   1 宗谷岬   45.5200, -141.9350, 26.00
-    # 南端 842 波照間   24.0550, -123.7683, 38.00
-
-    # 標高(m)
-    # 最高 410 野辺山   35.9483, -138.4717,	1350.00
-    # 最低 193 大潟     40.0000, -139.9500, -3.00
-
-    # 緯度
-    if args.latitude < 24.0 or 45.6 < args.latitude:
-        print("日本国内の緯度（波照間 24.055 ～　宗谷岬 45.52度)を指定してください")
-        sys.exit()
-    else:
-        lat = args.latitude
-    # 経度
-    if args.longitude > -123.0 or -145.8 > args.longitude:
         print(
-            "日本国内の経度（与那国島 -123.0100  ～ 納沙布 -145.7583度）を指定してください。"
+            "地点情報ファイルが見つかりません。\nファイル：{0}".format(args.station_info_file)
         )
-        sys.exit()
-    else:
-        lng = args.longitude
+        sys.exit(1)
 
-    # 標高
-    if args.elevation < -3.0 or 1350.0 < args.elevation:
-        print("日本国内の標高（大潟 -3.00 ～ 野辺山 1350.0m）を指定してください。")
-        sys.exit()
+    # 地点番号の検証
+    if args.station_no < 10 or 8420 < args.station_no:
+        print("地点番号は10～8420の番号で指定してください。")
+        sys.exit(1)
     else:
-        elevation = args.elevation  # 標高
+        station_no = args.station_no
+
+    # 地点情報ファイルからブロック番号を取得
+    try:
+        block_number = get_block_number_from_station_info(station_info_file, station_no)
+    except Exception as e:
+        print(
+            "地点情報ファイルを読み込めません。\nファイル：{0}\n{1}".format(station_info_file, e)
+        )
+        sys.exit(1)
+    if block_number is None:
+        print(
+            "地点番号 {0} は地点情報ファイルに見つかりません。\n"
+            "地点番号は StnInfo_XXXnnnn.dat の1列目の番号です（例: 東京 = 3630）。"
+            "ブロック番号（東京 = 363）ではありません。".format(station_no)
+        )
+        sys.exit(1)
+    else:
+        print(f"地点番号: {station_no}, ブロック番号: {block_number}")
 
     # 出力先ファイル名
     if args.file is None:
@@ -114,19 +139,34 @@ if __name__ == "__main__":
         fname = args.file[0]
 
     # 拡張アメダス標準年データファイルの読み込み
-    wea = ea2.WeaFile(weafile, no, elevation)
+    wea2 = ea2.Wea2File(wea2file, block_number)
+
+    # 地点情報ファイルと気象データファイルの組み合わせを確認
+    # （気象データのブロックに記録された地点番号が、指定した地点番号と一致するか）
+    if wea2.header.ea_no != station_no:
+        print(
+            "地点情報ファイルと気象データファイルの組み合わせが一致しません。\n"
+            "同じ年版の地点情報ファイル（例: PRY1120.wea2 には StnInfo_PRY1120.dat）を指定してください。\n"
+            "指定した地点番号: {0}、気象データのブロック {1} の地点番号: {2}".format(
+                station_no, block_number, wea2.header.ea_no
+            )
+        )
+        sys.exit(1)
+
+    # 標準年（e.g., 2020）
+    standard_year = get_standard_year_from_code(wea2.header.year)
 
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(
         {
-            "TAMB": wea.ambient_temperatures,
-            "RHUM": wea.relative_humidities,
-            "IGLOB_H": wea.horizontal_global_solar_irradiations,
-            "udef1": wea.downward_longwave_irradiations,
-            "WDIR": wea.wind_directions,
-            "WSPEED": wea.wind_velocities,
-            "udef2": wea.precipitation_amounts,
-            "udef3": wea.sunshine_durations,
+            "TAMB": wea2.ambient_temperatures,
+            "RHUM": wea2.relative_humidities,
+            "IGLOB_H": wea2.horizontal_global_solar_irradiations,
+            "udef1": wea2.downward_longwave_irradiations,
+            "WDIR": wea2.wind_directions,
+            "WSPEED": wea2.wind_velocities,
+            "udef2": wea2.precipitation_amounts,
+            "udef3": wea2.sunshine_durations,
         }
     )
     # 有効数字を指定
@@ -147,15 +187,18 @@ if __name__ == "__main__":
     # ファイル名
     if not fname:
         # 出力先ファイル名が指定されていなければデフォルトのファイル名
-        fname = "ea_wea2_{0:0=3}_{1}.99".format(no, station)
+        # 年版の異なるデータを同じフォルダで変換しても上書きしないよう、標準年を含める
+        fname = "ea{0}_wea2_{1:0=4}_{2}.99".format(
+            standard_year or wea2.header.year, station_no, wea2.station.name_roman
+        )
 
     # Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
         "<userdefined>       ! This weather data is generated by Weapy example. https://github.com/TRNSYSJP/weapy",
         # '<longitude> {0} ! East of greenwich: negative'.format(lng),
         # '<latitude>  {0}   ! '.format(lat),
-        "<longitude> {0} ! East of greenwich: negative".format(wea.longitude * (-1)),
-        "<latitude>  {0}   ! ".format(wea.latitude),
+        "<longitude> {0} ! East of greenwich: negative".format(wea2.longitude * (-1)),
+        "<latitude>  {0}   ! ".format(wea2.latitude),
         "<gmt>       9       ! time shift from GMT, east: positive (hours)",
         "<interval>  1       ! Data file time interval between consecutive lines (hours)",
         "<firsttime> 1       ! Time corresponding to first data line (hours)",
@@ -182,3 +225,16 @@ if __name__ == "__main__":
     df.to_csv(
         fname, mode="a", header=False, index=False, sep=" "
     )  # , float_format='%3.3f')
+
+    print("=" * 60)
+    print("ファイルの書き出しが完了しました")
+    print("=" * 60)
+    print(f"出力ファイル: {fname}")
+    if standard_year:
+        print(f"拡張アメダス: {standard_year}年版（年度コード {wea2.header.year}）")
+    else:
+        print(f"拡張アメダス: 年版不明（年度コード {wea2.header.year}）")
+    print(f"地点: {wea2.station.name_jp}（{wea2.station.name_roman}）／{wea2.prefecture.name_jp}")
+    print(f"地点番号: {station_no}（ブロック番号 {block_number}）")
+    print(f"緯度: {wea2.latitude}  経度: {wea2.longitude}  標高: {wea2.elevation} m")
+    print("=" * 60)

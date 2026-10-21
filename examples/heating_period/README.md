@@ -44,27 +44,46 @@ Plotlyを使用して以下の要素を含むHTMLチャートを生成:
 - クロスヘアーカーソルでの値確認
 - 凡例クリックでの系列表示/非表示切り替え
 
+## スクリプト一覧
+
+| ファイル | 概要 | 備考 |
+| --- | --- | --- |
+| plot_heating_period.py | WEAファイルから暖房期間を判定し、Plotlyでグラフを生成 | |
+| plot_heating_period_wea2.py | WEA2形式向けの暖房期間判定とグラフ生成 | |
+
 ## 使用方法
 
 ### 必要な設定
-スクリプト内の以下の変数を環境に合わせて設定:
+スクリプト内の以下の定数を環境に合わせて設定:
 
+plot_heating_period.py（WEA）
 ```python
-HEATING_THRESHOLD_TEMP = 15  # 暖房期間判定温度（℃）
-WEATHER_DATA_YEAR = 2010     # 使用する気象データの年
-no = 363                     # 地点番号（363: 東京）
-elevation = 6.0              # 標高（m）
-weafile = r'e:\EAD\RWY0110.wea'  # WEAファイルのパス
+HEATING_THRESHOLD_TEMP = 15  # 暖房期間の判定温度（℃）
+WEATHER_DATA_YEAR = 2010     # チャート表示用の日付の年
+STATION_NO = 363             # 地点番号（363: 東京）
+ELEVATION = 6.0              # 標高（m）
+WEATHER_FILE = r'e:\EAD\RWY0110.wea'  # WEAファイルのパス
+```
+
+plot_heating_period_wea2.py（WEA2）
+```python
+HEATING_THRESHOLD_TEMP = 15  # 暖房期間の判定温度（℃）
+WEATHER_DATA_YEAR = 2021     # チャート表示用の日付の年（2020年は閏年のため平年の2021年）
+BLOCK_NO = 363               # ブロック番号（363: 東京）。StnInfo_XXXnnnn.dat の8列目
+WEATHER_FILE = r'E:\EAD\PRY1120.wea2'  # WEA2ファイルのパス
 ```
 
 ### 実行
 ```bash
 python plot_heating_period.py
+python plot_heating_period_wea2.py
 ```
 
 ### 出力
 - コンソール: 暖房期間判定結果の詳細情報
-- ファイル: `heating_period_chart.html`（自動でブラウザで開かれる）
+- ファイル（自動でブラウザで開かれる）
+  - plot_heating_period.py: `heating_period_chart.html`
+  - plot_heating_period_wea2.py: `heating_period_<地点名（ローマ字）>_<地点番号>(<ブロック番号>).html`（例: `heating_period_TOKYO_3630(363).html`）
 
 ## 必要なパッケージ
 - weapy（拡張アメダスデータ読み込み用）

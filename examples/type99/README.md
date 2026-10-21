@@ -1,7 +1,7 @@
 # 概要
 
 拡張アメダス1995, 2000, 2010標準年の読み込みサンプル（旧フォーマット）
-
+## スクリプト
 |ファイル名|対応フォーマット|概要|
 |-|-|-|
 |conv_type99.py|wea|type99_format.pyのコマンドライン版|
@@ -10,6 +10,13 @@
 |type99_format_wea2.py|wea2|拡張アメダス気象データ、標準年のデータから、Type99（*.99）形式のファイルを出力するサンプル|
 
 出力する .99 のヘッダーの `<samp>` は、降水量（udef2）だけ -1、ほかは 0 です。拡張アメダスの降水量は正時前 1 時間の積算値なので、Type99 が値の時刻までの 1 時間の値として扱うように -1 にしています（日射量・大気放射量・日照時間は正時の前後 30 分の積算値、気温・相対湿度は正時の値なので 0）。
+
+## Test
+精度検証のためのファイルと検証結果
+
+|フォルダ|概要|
+|-|-|
+|Test_wea2|DataNavi8 から出力した CSV と conv_wea2_type99.py で作成した .99 を比較するツールと検証結果（[README](Test_wea2/README.md)）|
 
 
 <br>
@@ -58,20 +65,30 @@ pyhton conv_type99.py D:\EAD\RWY0110.wea Tokyo 363 35.69 -139.76 6.0 -f EA2010_T
 ## conv_wea2_type99.py
 type99_format_wea2.pyのコマンドライン版。wea2からType99形式のファイルへ変換する。
 
+### 使用方法
+
 ```
-python conv_wea2_type99.py weafile block_no
+python conv_wea2_type99.py wea2file station_info_file station_no
 ```
-|オプション|機能|
+|引数|機能|
 |-|-|
-|weafile|拡張アメダス気象データ標準年のデータファイル|
-|block_no |地点のブロック番号（1～842）※|
-|-f filename |出力先ファイル名（オプション）|
+|wea2file|拡張アメダス気象データ標準年のデータファイル（.wea2）|
+|station_info_file|地点情報ファイル（StnInfo_XXXnnnn.dat）|
+|station_no|地点番号（10～8420）|
+|-f filename|出力先ファイル名（オプション）|
 
-※：StnInfo_PRY1120.dat、関連ドキュメントを参照して、地点のブロック番号を指定してください。（地点番号ではない点に注意してください）
+### 説明
+地点番号を指定すると、地点情報ファイルから対応するブロック番号を自動的に取得して処理します。
 
-## 例）2020年標準年、東京、ブロック番号363をType99形式へ変換する
+### 例）2020年標準年、東京の地点番号3630をType99形式へ変換する
 ```
-python conv_wea2_type99.py E:\EAD\PRY1120.wea2 363
+python conv_wea2_type99.py E:\EAD\PRY1120.wea2 E:\EAD\StnInfo_PRY1120.dat 3630
+```
+変換されたType99形式のファイルは、ファイル名 "ea" + 標準年 + "\_wea2\_" + 地点番号 + "\_" + 地点名（ローマ字） + ".99"（例: ea2020_wea2_3630_TOKYO.99）で出力されます。
+
+出力先ファイル名を指定する場合：
+```
+python conv_wea2_type99.py E:\EAD\PRY1120.wea2 E:\EAD\StnInfo_PRY1120.dat 3630 -f EA2020_TOKYO.99
 ```
 ## type99_format_wea2.py
 拡張アメダス2020標準年の新フォーマット（WEA2）の読み込みサンプル

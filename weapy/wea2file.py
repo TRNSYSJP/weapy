@@ -5,6 +5,7 @@
 from .weatherdata import WeatherDataFile
 import struct
 import math
+import warnings
 import numpy as np
 
 KELVIN = 273.15 #絶対温度(摂氏0℃）
@@ -48,23 +49,32 @@ class location_info:
         self.observed_wind_speed_height = None #風速観測高さ（0.1m単位）
         self.corrected_wind_speed_height = None #風速補正高さ (0.1m単位)
 
-class name_info:
+class station_info:
     """
-    Name info class for the extended AMeDAS file.
+    Station info class for the extended AMeDAS file.
     """
     def __init__(self):
+        # 1/1の観測所名 (New Year's Day data is used as representative)
+        self.name_jp = None      # 観測所名(日本語)
+        self.name_roman = None   # 観測所名(ローマ字)
 
-        # 1/1の観測所名(日本語)
-        self.station_name_on_new_years_day = None #観測所名(日本語)
-        self.station_roman_name_on_new_years_day = None #観測所名(ローマ字)
-        self.prefecture_name_on_new_years_day = None #都道府県名(日本語)
-        self.prefecture_roman_name_on_new_years_day = None #都道府県名(ローマ字)
+        # 12/31の観測所名 (kept for reference)
+        self.name_year_end_jp = None
+        self.name_year_end_roman = None
 
-        # 12/31の観測所名(日本語)
-        self.station_name_on_last_day_of_the_year = None #観測所名(日本語)
-        self.station_roman_name_on_last_day_of_the_year = None #観測所名(ローマ字)
-        self.prefecture_name_on_last_day_of_the_year = None #都道府県名(日本語)
-        self.prefecture_roman_name_on_last_day_of_the_year = None #都道府県名(ローマ字)
+
+class prefecture_info:
+    """
+    Prefecture info class for the extended AMeDAS file.
+    """
+    def __init__(self):
+        # 1/1の都道府県名 (New Year's Day data is used as representative)
+        self.name_jp = None      # 都道府県名(日本語)
+        self.name_roman = None   # 都道府県名(ローマ字)
+
+        # 12/31の都道府県名 (kept for reference)
+        self.name_year_end_jp = None
+        self.name_year_end_roman = None
 
 
 class Wea2File(WeatherDataFile):
@@ -90,7 +100,8 @@ class Wea2File(WeatherDataFile):
         #-----------------------------------------------
         self.header = None
         self.location = None
-        self.name = None
+        self.station = None
+        self.prefecture = None
         self.file_name = filename   #標準年気象データファイル
         self.station_no = no        #地点番号
         # self.elevaton = elevation   #標高[m]
@@ -135,9 +146,9 @@ class Wea2File(WeatherDataFile):
         Read the header information from the file
         """
         _header = header()
-        header.ea_no = self.__read_int16(f)            # 拡張アメダス(EA)地点番号
-        header.entity_number = self.__read_int16(f)    # 種別
-        header.year = self.__read_int16(f)             # e.g 1120, (EA2020)
+        _header.ea_no = self.__read_int16(f)            # 拡張アメダス(EA)地点番号
+        _header.entity_number = self.__read_int16(f)    # 種別
+        _header.year = self.__read_int16(f)             # e.g 1120, (EA2020)
         self.header = _header # Add the header property to the instance of the WEA2 class
 
 
@@ -181,24 +192,26 @@ class Wea2File(WeatherDataFile):
         #1日目のlocationをWEA2へプロパティとして追加する
         self.location = location_list[0]
 
-        # Read the name information of the station
-        _name = name_info()
+        # Read the name information of the station and prefecture
+        _station = station_info()
+        _prefecture = prefecture_info()
 
         # 1/1の観測所名(日本語)
         # Station name on New Year's Day (Japanese)
-        _name.station_name_on_new_years_day = f.read(30).decode('shift-jis').strip() #観測所名(日本語)
-        _name.station_roman_name_on_new_years_day = f.read(30).decode('shift-jis').strip() #観測所名(ローマ字)
-        _name.prefecture_name_on_new_years_day = f.read(30).decode('shift-jis').strip() #都道府県名(日本語)
-        _name.prefecture_roman_name_on_new_years_day = f.read(30).decode('shift-jis').strip() #都道府県名(ローマ字)
+        _station.name_jp = f.read(30).decode('shift-jis').strip() #観測所名(日本語)
+        _station.name_roman = f.read(30).decode('shift-jis').strip() #観測所名(ローマ字)
+        _prefecture.name_jp = f.read(30).decode('shift-jis').strip() #都道府県名(日本語)
+        _prefecture.name_roman = f.read(30).decode('shift-jis').strip() #都道府県名(ローマ字)
 
         # 12/31の観測所名(日本語)
         # Station name on New Year's Eve
-        _name.station_name_on_last_day_of_the_year = f.read(30).decode('shift-jis').strip() #観測所名(日本語)
-        _name.station_roman_name_on_last_day_of_the_year = f.read(30).decode('shift-jis').strip() #観測所名(ローマ字)
-        _name.prefecture_name_on_last_day_of_the_year = f.read(30).decode('shift-jis').strip() #都道府県名(日本語)
-        _name.prefecture_roman_name_on_last_day_of_the_year = f.read(30).decode('shift-jis').strip() #都道府県名(ローマ字)
+        _station.name_year_end_jp = f.read(30).decode('shift-jis').strip() #観測所名(日本語)
+        _station.name_year_end_roman = f.read(30).decode('shift-jis').strip() #観測所名(ローマ字)
+        _prefecture.name_year_end_jp = f.read(30).decode('shift-jis').strip() #都道府県名(日本語)
+        _prefecture.name_year_end_roman = f.read(30).decode('shift-jis').strip() #都道府県名(ローマ字)
 
-        self.name = _name # Add the name property to the instance of the WEA2 class
+        self.station = _station # Add the station property to the instance of the WEA2 class
+        self.prefecture = _prefecture # Add the prefecture property to the instance of the WEA2 class
 
         # Skip blank 492 bytes
         # f.seek(492,1)
@@ -327,19 +340,24 @@ class Wea2File(WeatherDataFile):
     @property
     def station_name(self):
         """
-        Get the name of the location.\n
-        地点名(日本語)を返す
+        Deprecated. Use station.name_jp instead.\n
+        非推奨。station.name_jp を使ってください。地点名(日本語)を返す
         """
-        return self.name.station_name_on_new_years_day
+        warnings.warn(
+            "station_name は非推奨です。station.name_jp を使ってください。",
+            DeprecationWarning, stacklevel=2)
+        return self.station.name_jp
 
     @property
     def station_roman_name(self):
         """
-        Get the roman name of the location.\n
-        地点名（ローマ字）を返す
+        Deprecated. Use station.name_roman instead.\n
+        非推奨。station.name_roman を使ってください。地点名（ローマ字）を返す
         """
-        return self.name.station_roman_name_on_new_years_day
-
+        warnings.warn(
+            "station_roman_name は非推奨です。station.name_roman を使ってください。",
+            DeprecationWarning, stacklevel=2)
+        return self.station.name_roman
 
     @property
     def latitude(self):
