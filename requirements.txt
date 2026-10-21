@@ -41,7 +41,7 @@ six==1.17.0
 twine==6.2.0
 typing==3.7.4.3
 tzdata==2025.2
-urllib3==2.7.0
+urllib3==2.8.0
 ushlex==0.99.1
 -e .
 websocket-client==1.9.0
