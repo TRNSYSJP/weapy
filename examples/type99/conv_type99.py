@@ -148,7 +148,7 @@ if(__name__ == '__main__'):
             '<var>	WSPEED	<col>	6  <interp> 1  <add>  0  <mult>  1   <samp>   0	! [m/s]',
             '<var>	WDIR	<col>	5  <interp> 1  <add>  0  <mult>  1   <samp>   0	! [deg.]',
             '<var>	udef1	<col>	4  <interp> 0  <add>  0  <mult>  1   <samp>   0	! Atmosphric radiation [W/m^2]',
-            '<var>	udef2	<col>	7  <interp> 0  <add>  0  <mult>  1   <samp>   0	! Amount of rain [mm]',
+            '<var>	udef2	<col>	7  <interp> 0  <add>  0  <mult>  1   <samp>   -1	! Amount of rain [mm]',
             '<var>	udef3	<col>	8  <interp> 0  <add>  0  <mult>  1   <samp>   0	! Solar Radiation Time[hour]',
             '<var>	udef4	<col>	0  <interp> 0  <add>  0  <mult>  1   <samp>   0	!',
             '<data>',
