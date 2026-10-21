@@ -3,22 +3,10 @@
 # copyright  quattro corporate design. All right reserved.
 
 import weapy.wea2file as ea2
-import weapy.epwfile as epw
 import pandas as pd
 import argparse
 import os
 import sys
-import unicodedata
-
-
-def is_english(string):
-    """文字列に英字以外が入っていたらFalseを返す"""
-    for chr in string:
-        name = unicodedata.name(chr)
-        if not "LATIN" in name:
-            # else:
-            return False
-    return True
 
 
 def get_standard_year_from_code(year_code):
@@ -52,24 +40,20 @@ def get_block_number_from_station_info(station_info_file, station_no):
     Returns:
         int: ブロック番号（見つからない場合はNone）
     """
-    try:
-        df = pd.read_csv(
-            station_info_file,
-            sep=',',
-            header=None,
-            engine='python',
-            encoding='shift_jis'
-        )
-        # 1列目（インデックス0）が地点番号、8列目（インデックス7）がブロック番号
-        row = df[df[0] == station_no]
-        
-        if not row.empty:
-            block_number = int(row.iloc[0, 7])
-            return block_number
-        else:
-            return None
-    except Exception as e:
-        print(f"地点情報ファイルの読み込みエラー: {e}")
+    df = pd.read_csv(
+        station_info_file,
+        sep=',',
+        header=None,
+        engine='python',
+        encoding='shift_jis'
+    )
+    # 1列目（インデックス0）が地点番号、8列目（インデックス7）がブロック番号
+    row = df[df[0] == station_no]
+
+    if not row.empty:
+        block_number = int(row.iloc[0, 7])
+        return block_number
+    else:
         return None
 
 
@@ -81,7 +65,7 @@ if __name__ == "__main__":
     # 標準年のデータファイル(.wea2)
     wea2file = ""
     # 地点情報ファイル（Station Information File）
-    station_Info = ""
+    station_info_file = ""
     # 地点情報
     station_no = 999  # 存在しない地点番号で初期化
     fname = ""  # 出力先ファイル名
@@ -94,7 +78,7 @@ if __name__ == "__main__":
     )
     # 地点情報ファイル
     parser.add_argument(
-        "station_Info", help="地点情報ファイル（StnInfo_XXXnnnn.dat）", type=str 
+        "station_info_file", help="地点情報ファイル（StnInfo_XXXnnnn.dat）", type=str
     )
     # 地点番号
     parser.add_argument("station_no", help="地点番号（10～8420）", type=int)
@@ -112,31 +96,39 @@ if __name__ == "__main__":
         print(
             "指定されたファイルが見つかりません。\nファイル：{0}".format(args.wea2file)
         )
-        sys.exit()
+        sys.exit(1)
 
     # 地点情報ファイルが存在するか確認
-    if os.path.exists(args.station_Info):
-        station_Info = args.station_Info
+    if os.path.exists(args.station_info_file):
+        station_info_file = args.station_info_file
     else:
         print(
-            "地点情報ファイルが見つかりません。\nファイル：{0}".format(args.station_Info)
+            "地点情報ファイルが見つかりません。\nファイル：{0}".format(args.station_info_file)
         )
-        sys.exit()
+        sys.exit(1)
 
     # 地点番号の検証
     if args.station_no < 10 or 8420 < args.station_no:
         print("地点番号は10～8420の番号で指定してください。")
-        sys.exit()
+        sys.exit(1)
     else:
         station_no = args.station_no
 
     # 地点情報ファイルからブロック番号を取得
-    block_number = get_block_number_from_station_info(station_Info, station_no)
+    try:
+        block_number = get_block_number_from_station_info(station_info_file, station_no)
+    except Exception as e:
+        print(
+            "地点情報ファイルを読み込めません。\nファイル：{0}\n{1}".format(station_info_file, e)
+        )
+        sys.exit(1)
     if block_number is None:
         print(
-            "地点番号 {0} は地点情報ファイルに見つかりません。".format(station_no)
+            "地点番号 {0} は地点情報ファイルに見つかりません。\n"
+            "地点番号は StnInfo_XXXnnnn.dat の1列目の番号です（例: 東京 = 3630）。"
+            "ブロック番号（東京 = 363）ではありません。".format(station_no)
         )
-        sys.exit()
+        sys.exit(1)
     else:
         print(f"地点番号: {station_no}, ブロック番号: {block_number}")
 
@@ -148,6 +140,18 @@ if __name__ == "__main__":
 
     # 拡張アメダス標準年データファイルの読み込み
     wea2 = ea2.Wea2File(wea2file, block_number)
+
+    # 地点情報ファイルと気象データファイルの組み合わせを確認
+    # （気象データのブロックに記録された地点番号が、指定した地点番号と一致するか）
+    if wea2.header.ea_no != station_no:
+        print(
+            "地点情報ファイルと気象データファイルの組み合わせが一致しません。\n"
+            "同じ年版の地点情報ファイル（例: PRY1120.wea2 には StnInfo_PRY1120.dat）を指定してください。\n"
+            "指定した地点番号: {0}、気象データのブロック {1} の地点番号: {2}".format(
+                station_no, block_number, wea2.header.ea_no
+            )
+        )
+        sys.exit(1)
 
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(
@@ -220,10 +224,8 @@ if __name__ == "__main__":
     print("ファイルの書き出しが完了しました")
     print("=" * 60)
     print(f"出力ファイル: {fname}")
-    print(f"拡張アメダス年度: EA{wea2.header.year} ({get_standard_year_from_code(wea2.header.year)})")
-    print(f"地点名（日本語）: {wea2.station.name_jp}")
-    print(f"地点名（ローマ字）: {wea2.station.name_roman}")
-    print(f"都道府県名（日本語）: {wea2.prefecture.name_jp}")
-    print(f"地点番号: {station_no}")
-    print(f"ブロック番号: {block_number}")
+    print(f"拡張アメダス: {get_standard_year_from_code(wea2.header.year)}（年度コード {wea2.header.year}）")
+    print(f"地点: {wea2.station.name_jp}（{wea2.station.name_roman}）／{wea2.prefecture.name_jp}")
+    print(f"地点番号: {station_no}（ブロック番号 {block_number}）")
+    print(f"緯度: {wea2.latitude}  経度: {wea2.longitude}  標高: {wea2.elevation} m")
     print("=" * 60)
