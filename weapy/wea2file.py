@@ -5,6 +5,7 @@
 from .weatherdata import WeatherDataFile
 import struct
 import math
+import warnings
 import numpy as np
 
 KELVIN = 273.15 #絶対温度(摂氏0℃）
@@ -335,6 +336,28 @@ class Wea2File(WeatherDataFile):
         相対湿度のリストを返す[%]
         """
         return self.wea_data[10]
+
+    @property
+    def station_name(self):
+        """
+        Deprecated. Use station.name_jp instead.\n
+        非推奨。station.name_jp を使ってください。地点名(日本語)を返す
+        """
+        warnings.warn(
+            "station_name は非推奨です。station.name_jp を使ってください。",
+            DeprecationWarning, stacklevel=2)
+        return self.station.name_jp
+
+    @property
+    def station_roman_name(self):
+        """
+        Deprecated. Use station.name_roman instead.\n
+        非推奨。station.name_roman を使ってください。地点名（ローマ字）を返す
+        """
+        warnings.warn(
+            "station_roman_name は非推奨です。station.name_roman を使ってください。",
+            DeprecationWarning, stacklevel=2)
+        return self.station.name_roman
 
     @property
     def latitude(self):
