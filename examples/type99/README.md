@@ -14,6 +14,10 @@
 ## Test
 精度検証のためのファイルと検証結果
 
+|フォルダ|概要|
+|-|-|
+|Test_wea2|DataNavi8 から出力した CSV と conv_wea2_type99.py で作成した .99 を比較するツールと検証結果（[README](Test_wea2/README.md)）|
+
 
 <br>
 
