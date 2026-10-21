@@ -6,7 +6,7 @@ CSVファイルとType99ファイルのデータを比較し、相関係数を�
   python compare_files.py --all                           # 全ファイル比較
 
   例:
-    python compare_files.py "1480-えりも岬.csv" "ea_wea2_1480_ERIMOMISAKI.99"
+    python compare_files.py "1480-えりも岬.csv" "ea2020_wea2_1480_ERIMOMISAKI.99"
     python compare_files.py --all
 """
 import io
@@ -18,11 +18,11 @@ from contextlib import redirect_stdout
 
 # 比較するファイルの組み合わせ（CSVファイル、Type99ファイル、地点名）
 FILE_PAIRS = [
-    ('1480-えりも岬.csv', 'ea_wea2_1480_ERIMOMISAKI.99', 'えりも岬'),
-    ('1930-大潟.csv', 'ea_wea2_1930_OGATA.99', '大潟'),
-    ('3630-東京.csv', 'ea_wea2_3630_TOKYO.99', '東京'),
-    ('4100-野辺山.csv', 'ea_wea2_4100_NOBEYAMA.99', '野辺山'),
-    ('6180-笠岡.csv', 'ea_wea2_6180_KASAOKA.99', '笠岡')
+    ('1480-えりも岬.csv', 'ea2020_wea2_1480_ERIMOMISAKI.99', 'えりも岬'),
+    ('1930-大潟.csv', 'ea2020_wea2_1930_OGATA.99', '大潟'),
+    ('3630-東京.csv', 'ea2020_wea2_3630_TOKYO.99', '東京'),
+    ('4100-野辺山.csv', 'ea2020_wea2_4100_NOBEYAMA.99', '野辺山'),
+    ('6180-笠岡.csv', 'ea2020_wea2_6180_KASAOKA.99', '笠岡')
 ]
 
 COLUMNS = ['気温', '相対湿度', '全天日射量', '大気放射量', '風向', '風速', '降水量', '日照時間']

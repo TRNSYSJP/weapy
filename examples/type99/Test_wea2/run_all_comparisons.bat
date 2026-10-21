@@ -29,7 +29,7 @@ set "error=0"
 
 REM 1. えりも岬
 echo [1/5] えりも岬の比較を実行中...
-python compare_files.py "1480-えりも岬.csv" "ea_wea2_1480_ERIMOMISAKI.99" >> !result_file! 2>&1
+python compare_files.py "1480-えりも岬.csv" "ea2020_wea2_1480_ERIMOMISAKI.99" >> !result_file! 2>&1
 if !errorlevel! equ 0 (
   echo   成功
   set /a success+=1
@@ -43,7 +43,7 @@ echo. >> !result_file!
 
 REM 2. 大潟
 echo [2/5] 大潟の比較を実行中...
-python compare_files.py "1930-大潟.csv" "ea_wea2_1930_OGATA.99" >> !result_file! 2>&1
+python compare_files.py "1930-大潟.csv" "ea2020_wea2_1930_OGATA.99" >> !result_file! 2>&1
 if !errorlevel! equ 0 (
   echo   成功
   set /a success+=1
@@ -57,7 +57,7 @@ echo. >> !result_file!
 
 REM 3. 東京
 echo [3/5] 東京の比較を実行中...
-python compare_files.py "3630-東京.csv" "ea_wea2_3630_TOKYO.99" >> !result_file! 2>&1
+python compare_files.py "3630-東京.csv" "ea2020_wea2_3630_TOKYO.99" >> !result_file! 2>&1
 if !errorlevel! equ 0 (
   echo   成功
   set /a success+=1
@@ -71,7 +71,7 @@ echo. >> !result_file!
 
 REM 4. 野辺山
 echo [4/5] 野辺山の比較を実行中...
-python compare_files.py "4100-野辺山.csv" "ea_wea2_4100_NOBEYAMA.99" >> !result_file! 2>&1
+python compare_files.py "4100-野辺山.csv" "ea2020_wea2_4100_NOBEYAMA.99" >> !result_file! 2>&1
 if !errorlevel! equ 0 (
   echo   成功
   set /a success+=1
@@ -85,7 +85,7 @@ echo. >> !result_file!
 
 REM 5. 笠岡
 echo [5/5] 笠岡の比較を実行中...
-python compare_files.py "6180-笠岡.csv" "ea_wea2_6180_KASAOKA.99" >> !result_file! 2>&1
+python compare_files.py "6180-笠岡.csv" "ea2020_wea2_6180_KASAOKA.99" >> !result_file! 2>&1
 if !errorlevel! equ 0 (
   echo   成功
   set /a success+=1

@@ -36,11 +36,11 @@ CSV,Type99形式には、拡張アメダス気象データが含まれるため�
 python compare_files.py
 
 # 特定のファイルを指定
-python compare_files.py "1480-えりも岬.csv" "ea_wea2_1480_ERIMOMISAKI.99"
-python compare_files.py "3630-東京.csv" "ea_wea2_3630_TOKYO.99"
-python compare_files.py "1930-大潟.csv" "ea_wea2_1930_OGATA.99"
-python compare_files.py "4100-野辺山.csv" "ea_wea2_4100_NOBEYAMA.99"
-python compare_files.py "6180-笠岡.csv" "ea_wea2_6180_KASAOKA.99"
+python compare_files.py "1480-えりも岬.csv" "ea2020_wea2_1480_ERIMOMISAKI.99"
+python compare_files.py "3630-東京.csv" "ea2020_wea2_3630_TOKYO.99"
+python compare_files.py "1930-大潟.csv" "ea2020_wea2_1930_OGATA.99"
+python compare_files.py "4100-野辺山.csv" "ea2020_wea2_4100_NOBEYAMA.99"
+python compare_files.py "6180-笠岡.csv" "ea2020_wea2_6180_KASAOKA.99"
 ```
 
 ### 2. 全ファイルペアの一括比較
@@ -126,11 +126,11 @@ python compare_files.py --all
 
 | # | ファイル名 | CSV | Type99 |
 |---|-----------|-----|--------|
-| 1 | えりも岬 (1480) | 1480-えりも岬.csv | ea_wea2_1480_ERIMOMISAKI.99 |
-| 2 | 大潟 (1930) | 1930-大潟.csv | ea_wea2_1930_OGATA.99 |
-| 3 | 東京 (3630) | 3630-東京.csv | ea_wea2_3630_TOKYO.99 |
-| 4 | 野辺山 (4100) | 4100-野辺山.csv | ea_wea2_4100_NOBEYAMA.99 |
-| 5 | 笠岡 (6180) | 6180-笠岡.csv | ea_wea2_6180_KASAOKA.99 |
+| 1 | えりも岬 (1480) | 1480-えりも岬.csv | ea2020_wea2_1480_ERIMOMISAKI.99 |
+| 2 | 大潟 (1930) | 1930-大潟.csv | ea2020_wea2_1930_OGATA.99 |
+| 3 | 東京 (3630) | 3630-東京.csv | ea2020_wea2_3630_TOKYO.99 |
+| 4 | 野辺山 (4100) | 4100-野辺山.csv | ea2020_wea2_4100_NOBEYAMA.99 |
+| 5 | 笠岡 (6180) | 6180-笠岡.csv | ea2020_wea2_6180_KASAOKA.99 |
 
 ## 必要なライブラリ
 
@@ -146,7 +146,7 @@ pip install pandas numpy
 
 ```bash
 # 東京のデータを比較
-python compare_files.py "3630-東京.csv" "ea_wea2_3630_TOKYO.99"
+python compare_files.py "3630-東京.csv" "ea2020_wea2_3630_TOKYO.99"
 
 # 全ファイルペアを比較
 run_all_comparisons.bat

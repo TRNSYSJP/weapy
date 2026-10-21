@@ -80,6 +80,7 @@ python conv_wea2_type99.py wea2file station_info_file station_no
 ```
 python conv_wea2_type99.py E:\EAD\PRY1120.wea2 E:\EAD\StnInfo_PRY1120.dat 3630
 ```
+変換されたType99形式のファイルは、ファイル名 "ea" + 標準年 + "\_wea2\_" + 地点番号 + "\_" + 地点名（ローマ字） + ".99"（例: ea2020_wea2_3630_TOKYO.99）で出力されます。
 
 出力先ファイル名を指定する場合：
 ```

@@ -17,16 +17,16 @@ def get_standard_year_from_code(year_code):
         year_code (int): 年度コード (e.g., 1120)
     
     Returns:
-        str: 標準年 (e.g., "2020年版")
+        int: 標準年 (e.g., 2020)。不明な年度コードの場合はNone
     """
     year_map = {
-        8195: "1995年版",
-        9100: "2000年版",
-        110: "2010年版",
-        1120: "2020年版",
-        7795: "2086年版"
+        8195: 1995,
+        9100: 2000,
+        110: 2010,
+        1120: 2020,
+        7795: 2086
     }
-    return year_map.get(year_code, "不明")
+    return year_map.get(year_code)
 
 
 def get_block_number_from_station_info(station_info_file, station_no):
@@ -153,6 +153,9 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
+    # 標準年（e.g., 2020）
+    standard_year = get_standard_year_from_code(wea2.header.year)
+
     # wea(WeaFileクラス）からDataFrameを生成する
     df = pd.DataFrame(
         {
@@ -184,7 +187,10 @@ if __name__ == "__main__":
     # ファイル名
     if not fname:
         # 出力先ファイル名が指定されていなければデフォルトのファイル名
-        fname = "ea_wea2_{0:0=4}_{1}.99".format(station_no,wea2.station.name_roman)
+        # 年版の異なるデータを同じフォルダで変換しても上書きしないよう、標準年を含める
+        fname = "ea{0}_wea2_{1:0=4}_{2}.99".format(
+            standard_year or wea2.header.year, station_no, wea2.station.name_roman
+        )
 
     # Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
@@ -224,7 +230,10 @@ if __name__ == "__main__":
     print("ファイルの書き出しが完了しました")
     print("=" * 60)
     print(f"出力ファイル: {fname}")
-    print(f"拡張アメダス: {get_standard_year_from_code(wea2.header.year)}（年度コード {wea2.header.year}）")
+    if standard_year:
+        print(f"拡張アメダス: {standard_year}年版（年度コード {wea2.header.year}）")
+    else:
+        print(f"拡張アメダス: 年版不明（年度コード {wea2.header.year}）")
     print(f"地点: {wea2.station.name_jp}（{wea2.station.name_roman}）／{wea2.prefecture.name_jp}")
     print(f"地点番号: {station_no}（ブロック番号 {block_number}）")
     print(f"緯度: {wea2.latitude}  経度: {wea2.longitude}  標高: {wea2.elevation} m")
