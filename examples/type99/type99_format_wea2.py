@@ -51,7 +51,7 @@ if(__name__ == '__main__'):
     # print(df)
 
     #ファイル名
-    fname = 'ea2020_{0:0=3}_{1}.99'.format(no, wea2.station_roman_name)
+    fname = 'ea2020_{0:0=3}_{1}.99'.format(no, wea2.station.name_roman)
 
     #Type99 のヘッダー（拡張アメダス気象データ、東京）
     t99header = [
@@ -84,7 +84,7 @@ if(__name__ == '__main__'):
     df.to_csv(fname, mode='a', header=False, index=False, sep=' ') #, float_format='%3.3f')
     
     # デバッグ用に出力
-    # df.to_csv(f'test_{wea2.station_roman_name}.csv', header=True, index=False, sep=',') #, float_format='%3.3f')
+    # df.to_csv(f'test_{wea2.station.name_roman}.csv', header=True, index=False, sep=',') #, float_format='%3.3f')
     
 
 
