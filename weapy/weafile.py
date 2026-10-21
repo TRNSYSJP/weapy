@@ -74,7 +74,7 @@ class WeaFile(WeatherDataFile):
 
     def remove_remark(self, val):
         """Remove the remark"""
-        return math.floor(val/10.0) # round the value down
+        return math.trunc(val / 10.0) # 0 方向へ切り捨て（負の値も絶対値の下 1 桁を除く）
 
     def __load(self, weafile, no):
         """
